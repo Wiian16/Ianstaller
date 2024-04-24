@@ -226,7 +226,7 @@ mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo "Installing essential packages..."
-pacstrap /mnt base linux linux-firmware grub efibootmgr
+pacstrap /mnt base linux linux-firmware grub efibootmgr zsh
 
 
 # Configure the system
@@ -242,6 +242,7 @@ echo "127.0.0.1 localhost" >> /mnt/etc/hosts
 echo "::1       localhost" >> /mnt/etc/hosts
 echo "127.0.1.1 $HOSTNAME.localdomain $HOSTNAME" >> /mnt/etc/hosts
 echo root:"$USER_PASSWORD" | chpasswd --root /mnt
+arch-chroot /mnt chsh -s /bin/zsh root
 
 
 # Install and configure the bootloader
@@ -254,33 +255,30 @@ arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 # === Level 1 Installation
 
-# Function to create a user account
-create_user() {
-    echo "Creating user account..."
-    arch-chroot /mnt useradd -m -G wheel -s /bin/bash "$USER_NAME"
-    echo "$USER_NAME:$USER_PASSWORD" | chpasswd --root /mnt
-}
+# Create a user account
+echo "Creating user account..."
+arch-chroot /mnt useradd -m -G wheel -s /bin/zsh "$USER_NAME"
+echo "$USER_NAME:$USER_PASSWORD" | chpasswd --root /mnt
 
-# Function to set up sudo
-setup_sudo() {
-    echo "Setting up sudo..."
-    # Install sudo if it's not already installed
-    arch-chroot /mnt pacman -S --noconfirm sudo
-    # Uncomment to allow members of group wheel to execute any command
-    arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
-}
 
-# Function to set up a swap file
-setup_swap() {
-    if [ "$SWAP_SIZE" -gt 0 ]; then
-        echo "Setting up swap file..."
-        arch-chroot /mnt fallocate -l "${SWAP_SIZE}G" /swapfile
-        arch-chroot /mnt chmod 600 /swapfile
-        arch-chroot /mnt mkswap /swapfile
-        arch-chroot /mnt swapon /swapfile
-        echo '/swapfile none swap defaults 0 0' >> /mnt/etc/fstab
-    fi
-}
+# Set up sudo
+echo "Setting up sudo..."
+# Install sudo if it's not already installed
+arch-chroot /mnt pacman -S --noconfirm sudo
+# Uncomment to allow members of group wheel to execute any command
+arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+
+
+# Set up a swap file
+if [ "$SWAP_SIZE" -gt 0 ]; then
+    echo "Setting up swap file..."
+    arch-chroot /mnt fallocate -l "${SWAP_SIZE}G" /swapfile
+    arch-chroot /mnt chmod 600 /swapfile
+    arch-chroot /mnt mkswap /swapfile
+    arch-chroot /mnt swapon /swapfile
+    echo '/swapfile none swap defaults 0 0' >> /mnt/etc/fstab
+fi
+
 
 
 
