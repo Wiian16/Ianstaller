@@ -284,7 +284,16 @@ echo "Installing and enabling NetworkManager..."
 arch-chroot /mnt pacman -S --noconfirm networkmanager
 arch-chroot /mnt systemctl enable NetworkManager
 
-
+# Install and setup UFW
+echo "Installing and setting up UFW (Uncomplicated Firewall)..."
+arch-chroot /mnt pacman -S --noconfirm ufw
+# Enable basic firewall rules (deny incoming, allow outgoing)
+arch-chroot /mnt ufw default deny incoming
+arch-chroot /mnt ufw default allow outgoing
+# Enable the firewall
+arch-chroot /mnt ufw enable
+# Enable UFW to start on boot
+arch-chroot /mnt systemctl enable ufw
 
 
 
