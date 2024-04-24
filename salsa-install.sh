@@ -226,7 +226,7 @@ mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo "Installing essential packages..."
-pacstrap /mnt base linux linux-firmware grub efibootmgr zsh
+pacstrap /mnt base linux linux-firmware grub efibootmgr zsh curl wget git
 
 
 # Configure the system
@@ -294,6 +294,68 @@ arch-chroot /mnt ufw default allow outgoing
 arch-chroot /mnt ufw enable
 # Enable UFW to start on boot
 arch-chroot /mnt systemctl enable ufw
+
+
+
+
+
+
+# === Level 2 Installation === #
+
+# Install Oh My Zsh for the root user
+echo "Installing Oh My Zsh for the root user..."
+arch-chroot /mnt sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Install Oh My Zsh for the new user
+echo "Installing Oh My Zsh for the new user..."
+arch-chroot /mnt su - "$USER_NAME" -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Create the custom theme directory for the root user
+arch-chroot /mnt mkdir -p /root/.oh-my-zsh/custom/themes
+
+# Create the custom theme directory for the new user
+arch-chroot /mnt mkdir -p /home/"$USER_NAME"/.oh-my-zsh/custom/themes
+
+# Define the theme content
+read -r -d '' THEME_CONTENT << 'EOT'
+# Default OMZ theme for Archcraft
+
+if [[ "$USER" == "root" ]]; then
+  PROMPT="%(?:%{$fg_bold[red]%}%{$fg_bold[yellow]%}%{$fg_bold[red]%} :%{$fg_bold[red]%} )"
+  PROMPT+='%{$fg[cyan]%}  %c%{$reset_color%} $(git_prompt_info)'
+else
+  PROMPT="%(?:%{$fg_bold[red]%}%{$fg_bold[green]%}%{$fg_bold[yellow]%} :%{$fg_bold[red]%} )"
+  PROMPT+='%{$fg[cyan]%}  %c%{$reset_color%} $(git_prompt_info)'
+fi
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}  git:(%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}✗"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
+EOT
+
+# Create the custom theme file for the root user with the theme content
+echo "$THEME_CONTENT" > /mnt/root/.oh-my-zsh/custom/themes/archcraft.zsh-theme
+
+# Create the custom theme file for the new user with the theme content
+echo "$THEME_CONTENT" > /mnt/home/"$USER_NAME"/.oh-my-zsh/custom/themes/archcraft.zsh-theme
+
+# Set the custom theme in the .zshrc file for the root user
+arch-chroot /mnt sed -i 's|ZSH_THEME="robbyrussell"|ZSH_THEME="archcraft"|' /root/.zshrc
+
+# Set the custom theme in the .zshrc file for the new user
+arch-chroot /mnt sed -i 's|ZSH_THEME="robbyrussell"|ZSH_THEME="archcraft"|' /home/"$USER_NAME"/.zshrc
+
+# Ensure the new user owns their home directory and contents
+arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
+
+
+
+
+
+
+
+
 
 
 
