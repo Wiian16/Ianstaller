@@ -279,6 +279,10 @@ if [ "$SWAP_SIZE" -gt 0 ]; then
     echo '/swapfile none swap defaults 0 0' >> /mnt/etc/fstab
 fi
 
+# Install and enable NetworkManager
+echo "Installing and enabling NetworkManager..."
+arch-chroot /mnt pacman -S --noconfirm networkmanager
+arch-chroot /mnt systemctl enable NetworkManager
 
 
 
