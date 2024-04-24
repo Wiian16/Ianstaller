@@ -99,7 +99,7 @@ list_devices() {
 clear
 
 # Display welcome message
-echo -e "${GREEN}Sam's Simplified Arch Linux Installation Script${NC}"
+echo -e "${GREEN}Sam's Arch Linux Setup Assistant${NC}"
 echo -e "${BRIGHT_BLUE}-------------------------------------------------${NC}"
 
 # Ask for hostname with validation
@@ -201,71 +201,69 @@ fi
 
 
 
-# === Installation == #
+# === Installation === #
 
-
-
-# Function to partition the disk (dry run)
+# Function to partition the disk
 partition_disk() {
-    echo "Partitioning the disk (dry run)..."
-    echo "Creating EFI partition on $EFI_PARTITION"
-    echo "Creating root partition on $ROOT_PARTITION"
-    # Add commands for partitioning here, using tools like parted or fdisk
+    echo "Partitioning the disk..."
+    parted /dev/"$DEVICE" --script mklabel gpt
+    parted /dev/"$DEVICE" --script mkpart ESP fat32 1MiB 513MiB
+    parted /dev/"$DEVICE" --script set 1 boot on
+    parted /dev/"$DEVICE" --script mkpart primary ext4 513MiB 100%
 }
 
-# Function to format the partitions (dry run)
+# Function to format the partitions
 format_partitions() {
-    echo "Formatting the partitions (dry run)..."
-    echo "Formatting $EFI_PARTITION as FAT32 for the EFI system partition"
-    echo "Formatting $ROOT_PARTITION as ext4 for the root file system"
-    # Add commands for formatting here, using mkfs.fat and mkfs.ext4
+    echo "Formatting the partitions..."
+    mkfs.fat -F32 "$EFI_PARTITION"
+    mkfs.ext4 "$ROOT_PARTITION"
 }
 
-# Function to mount the partitions (dry run)
+# Function to mount the partitions
 mount_partitions() {
-    echo "Mounting the partitions (dry run)..."
-    echo "Mounting $ROOT_PARTITION to /mnt"
-    echo "Mounting $EFI_PARTITION to /mnt/boot"
-    # Add mount commands here
+    echo "Mounting the partitions..."
+    mount "$ROOT_PARTITION" /mnt
+    mkdir -p /mnt/boot/efi
+    mount "$EFI_PARTITION" /mnt/boot/efi
 }
 
-# Function to install essential packages (dry run)
+# Function to install essential packages
 install_packages() {
-    echo "Installing essential packages (dry run)..."
-    echo "Pacstrap base, linux, linux-firmware into /mnt"
-    # Add pacstrap command here
+    echo "Installing essential packages..."
+    pacstrap /mnt base linux linux-firmware grub efibootmgr
 }
 
-# Function to configure the system (dry run)
+# Function to configure the system
 configure_system() {
-    echo "Configuring the system (dry run)..."
-    echo "Generating fstab"
-    echo "Setting timezone to $TIMEZONE"
-    echo "Setting hostname to $HOSTNAME"
-    echo "Setting locale to en_US.UTF-8"
-    echo "Setting vconsole keyboard layout"
-    echo "Setting up network configuration"
-    echo "Setting root password"
-    # Add system configuration commands here
+    echo "Configuring the system..."
+    genfstab -U /mnt >> /mnt/etc/fstab
+    arch-chroot /mnt ln -sf /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
+    arch-chroot /mnt hwclock --systohc
+    echo "$HOSTNAME" > /mnt/etc/hostname
+    echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
+    arch-chroot /mnt locale-gen
+    echo "KEYMAP=us" > /mnt/etc/vconsole.conf
+    echo "127.0.0.1 localhost" >> /mnt/etc/hosts
+    echo "::1       localhost" >> /mnt/etc/hosts
+    echo "127.0.1.1 $HOSTNAME.localdomain $HOSTNAME" >> /mnt/etc/hosts
+    echo root:"$USER_PASSWORD" | chpasswd --root /mnt
 }
 
-# Function to install and configure the bootloader (dry run)
+# Function to install and configure the bootloader
 install_bootloader() {
-    echo "Installing and configuring the bootloader (dry run)..."
-    # Add bootloader installation commands here
+    echo "Installing and configuring the bootloader..."
+    arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 }
 
-# Function to finish up the installation (dry run)
+# Function to finish up the installation
 finish_installation() {
-    echo "Finishing up the installation (dry run)..."
-    echo "Unmounting partitions"
-    echo "Rebooting the system"
-    # Add unmount and reboot commands here
+    echo "Finishing up the installation..."
+    umount -R /mnt
+    echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
 }
 
-
-
-# Start the installation process (dry run)
+# Start the installation process
 partition_disk
 format_partitions
 mount_partitions
@@ -273,5 +271,3 @@ install_packages
 configure_system
 install_bootloader
 finish_installation
-
-echo -e "${GREEN}Dry run complete. If this were a real installation, the system would now be installed.${NC}"
