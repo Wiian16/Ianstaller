@@ -302,6 +302,8 @@ arch-chroot /mnt systemctl enable ufw
 
 # === Level 2 Installation === #
 
+# = Oh My Zsh = #
+
 # Install Oh My Zsh for the root user
 echo "Installing Oh My Zsh for the root user..."
 arch-chroot /mnt sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -316,38 +318,114 @@ arch-chroot /mnt mkdir -p /root/.oh-my-zsh/custom/themes
 # Create the custom theme directory for the new user
 arch-chroot /mnt mkdir -p /home/"$USER_NAME"/.oh-my-zsh/custom/themes
 
-# Define the theme content
-read -r -d '' THEME_CONTENT << 'EOT'
-# Default OMZ theme for Archcraft
-
-if [[ "$USER" == "root" ]]; then
-  PROMPT="%(?:%{$fg_bold[red]%}%{$fg_bold[yellow]%}%{$fg_bold[red]%} :%{$fg_bold[red]%} )"
-  PROMPT+='%{$fg[cyan]%}  %c%{$reset_color%} $(git_prompt_info)'
-else
-  PROMPT="%(?:%{$fg_bold[red]%}%{$fg_bold[green]%}%{$fg_bold[yellow]%} :%{$fg_bold[red]%} )"
-  PROMPT+='%{$fg[cyan]%}  %c%{$reset_color%} $(git_prompt_info)'
-fi
-
-ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}  git:(%{$fg[red]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}✗"
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
-EOT
-
-# Create the custom theme file for the root user with the theme content
-echo "$THEME_CONTENT" > /mnt/root/.oh-my-zsh/custom/themes/archcraft.zsh-theme
-
-# Create the custom theme file for the new user with the theme content
-echo "$THEME_CONTENT" > /mnt/home/"$USER_NAME"/.oh-my-zsh/custom/themes/archcraft.zsh-theme
-
-# Set the custom theme in the .zshrc file for the root user
-arch-chroot /mnt sed -i 's|ZSH_THEME="robbyrussell"|ZSH_THEME="archcraft"|' /root/.zshrc
-
-# Set the custom theme in the .zshrc file for the new user
-arch-chroot /mnt sed -i 's|ZSH_THEME="robbyrussell"|ZSH_THEME="archcraft"|' /home/"$USER_NAME"/.zshrc
-
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
+
+
+# = Yay = #
+
+# Install Yay AUR Helper
+echo "Installing Yay AUR Helper..."
+arch-chroot /mnt pacman -S --needed --noconfirm git base-devel
+arch-chroot /mnt su - "$USER_NAME" -c "git clone https://aur.archlinux.org/yay.git /tmp/yay"
+arch-chroot /mnt su - "$USER_NAME" -c "cd /tmp/yay && makepkg -si --noconfirm"
+arch-chroot /mnt rm -rf /tmp/yay
+
+
+
+# = TLP = #
+
+# Install TLP for power management
+echo "Installing TLP for power management..."
+arch-chroot /mnt pacman -S --noconfirm tlp tlp-rdw
+
+# Enable TLP services
+echo "Enabling TLP services..."
+arch-chroot /mnt systemctl enable tlp.service
+arch-chroot /mnt systemctl enable tlp-sleep.service
+
+
+
+
+
+
+
+# === Level 3 Installation === #
+
+# = Graphics Drivers = #
+
+# Detect and install graphics drivers
+echo "Detecting and installing graphics drivers..."
+
+# Detect Intel and NVIDIA graphics
+intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "yes" || echo "no")
+nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || echo "no")
+
+# Install Intel drivers only if Intel is detected and NVIDIA is not
+if [ "$intel_detected" = "yes" ] && [ "$nvidia_detected" = "no" ]; then
+    echo "Intel graphics detected. Installing Intel drivers..."
+    arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+fi
+
+# Install AMD drivers if AMD graphics are detected
+if lspci | grep -E "VGA|3D" | grep -qi amd; then
+    echo "AMD graphics detected. Installing AMD drivers..."
+    arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
+fi
+
+# Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
+if [ "$nvidia_detected" = "yes" ]; then
+    echo "NVIDIA graphics detected. Installing NVIDIA drivers..."
+    arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
+fi
+
+
+
+# = Micro Code = #
+
+# Detect and install CPU microcode
+echo "Detecting and installing CPU microcode..."
+
+# Detect Intel CPU
+if grep -qi intel /proc/cpuinfo; then
+    echo "Intel CPU detected. Installing microcode..."
+    arch-chroot /mnt pacman -S --noconfirm intel-ucode
+fi
+
+# Detect AMD CPU
+if grep -qi amd /proc/cpuinfo; then
+    echo "AMD CPU detected. Installing microcode..."
+    arch-chroot /mnt pacman -S --noconfirm amd-ucode
+fi
+
+# Regenerate initramfs to include microcode updates
+echo "Regenerating initramfs..."
+arch-chroot /mnt mkinitcpio -P
+
+
+
+# = Audio = #
+
+# Install audio packages
+echo "Installing audio packages..."
+arch-chroot /mnt pacman -S --noconfirm pulseaudio pulseaudio-alsa alsa-utils pavucontrol
+
+# Install Bluetooth packages
+echo "Installing Bluetooth packages..."
+arch-chroot /mnt pacman -S --noconfirm bluez bluez-utils
+
+
+
+# = Bluetooth = #
+
+# Enable the Bluetooth service
+echo "Enabling Bluetooth service..."
+arch-chroot /mnt systemctl enable bluetooth.service
+
+# Install and enable additional Bluetooth tools and services
+arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
+
+
 
 
 
