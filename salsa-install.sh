@@ -445,7 +445,7 @@ arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
 # Define an array of packages to install
 PACKAGES=(
     # Xorg
-    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd lxappearance
+    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd lxappearance
     # Window manager and tools
     bspwm sxhkd
     # Display manager
@@ -455,10 +455,10 @@ PACKAGES=(
     # Polybar, picom, dunst, and conky
     polybar picom dunst conky
     # Fonts
-    ttf-dejavu ttf-liberation noto-fontsz ttf-jetbrains-mono-nerd ttf-jetbrains-mono
+    ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
 
     # Other packages for config files
-    rofi feh copyq xmodmap mpc alsa-utils pulseaudio playerctl
+    rofi feh copyq mpc alsa-utils pulseaudio playerctl
     discord neovim ranger htop
 )
 
@@ -473,7 +473,7 @@ arch-chroot /mnt pacman -S --noconfirm "${PACKAGES[@]}"
 
 # Install all AUR packages in the array
 echo "Installing AUR packages..."
-arch-chroot /mnt su - "$USER_NAME" -c "yay -S --noconfirm ${AUR_PACKAGES[@]}"
+arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -S --noconfirm ${AUR_PACKAGES[@]}"
 
 # Enable SDDM
 echo "Enabling SDDM..."
@@ -505,5 +505,7 @@ echo -e "${GREEN}Desktop environment installation complete. Please reboot into t
 # === Finish Installation === #
 
 echo "Finishing up the installation..."
+fuser -km /mnt
+sleep 2
 umount -R /mnt
 echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
