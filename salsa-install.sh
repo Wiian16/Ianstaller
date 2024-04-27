@@ -284,6 +284,13 @@ echo "Installing and enabling NetworkManager..."
 arch-chroot /mnt pacman -S --noconfirm networkmanager
 arch-chroot /mnt systemctl enable NetworkManager
 
+
+# Enable and start systemd-timesyncd for time synchronization
+echo "Enabling and starting systemd-timesyncd for time synchronization..."
+arch-chroot /mnt systemctl enable systemd-timesyncd.service
+arch-chroot /mnt systemctl start systemd-timesyncd.service
+
+
 # Install and setup UFW
 echo "Installing and setting up UFW (Uncomplicated Firewall)..."
 arch-chroot /mnt pacman -S --noconfirm ufw
