@@ -226,7 +226,7 @@ mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo "Installing essential packages..."
-pacstrap /mnt base linux linux-firmware grub efibootmgr zsh curl wget git
+pacstrap /mnt base linux linux-firmware grub efibootmgr zsh curl wget git nano
 
 
 # Configure the system
@@ -440,6 +440,66 @@ arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
 
 
 
+
+# === Level 4 Installation === #
+
+# Define an array of packages to install
+PACKAGES=(
+    # Xorg
+    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd lxappearance
+    # Window manager and tools
+    bspwm sxhkd
+    # Display manager
+    sddm
+    # Terminal emulator, file manager, and utilities
+    thunar alacritty neofetch
+    # Polybar, picom, dunst, and conky
+    polybar picom dunst conky
+    # Fonts
+    ttf-dejavu ttf-liberation noto-fontsz ttf-jetbrains-mono-nerd ttf-jetbrains-mono
+
+    # Other packages for config files
+    rofi feh copyq xmodmap mpc alsa-utils pulseaudio playerctl
+    discord neovim ranger htop
+)
+
+AUR_PACKAGES=(
+    google-chrome ksuperkey xfce-polkit
+)
+
+
+# Install all packages in the array
+echo "Installing packages..."
+arch-chroot /mnt pacman -S --noconfirm "${PACKAGES[@]}"
+
+# Install all AUR packages in the array
+echo "Installing AUR packages..."
+arch-chroot /mnt su - "$USER_NAME" -c "yay -S --noconfirm ${AUR_PACKAGES[@]}"
+
+# Enable SDDM
+echo "Enabling SDDM..."
+arch-chroot /mnt systemctl enable sddm.service
+
+# Clone the user's dotfiles repository
+echo "Cloning the user's dotfiles repository..."
+arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/DotFiles.git /home/$USER_NAME/.dotfiles"
+
+# Apply the dotfiles
+echo "Applying the dotfiles..."
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r /home/$USER_NAME/.dotfiles/.config/* /home/$USER_NAME/.config/"
+arch-chroot /mnt su - "$USER_NAME" -c "cp /home/$USER_NAME/.dotfiles/.xinitrc /home/$USER_NAME/"
+arch-chroot /mnt su - "$USER_NAME" -c "cp /home/$USER_NAME/.dotfiles/.Xresources /home/$USER_NAME/"
+
+# Ensure the new user owns their home directory and contents
+arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
+
+# Clean up
+echo "Cleaning up..."
+arch-chroot /mnt pacman -Scc --noconfirm
+
+# Finish up
+echo "Finishing up the desktop environment installation..."
+echo -e "${GREEN}Desktop environment installation complete. Please reboot into the new system.${NC}"
 
 
 
