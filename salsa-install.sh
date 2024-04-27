@@ -266,8 +266,7 @@ echo "Setting up sudo..."
 # Install sudo if it's not already installed
 arch-chroot /mnt pacman -S --noconfirm sudo
 # Uncomment to allow members of group wheel to execute any command
-arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
-
+arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
 
 # Set up a swap file
 if [ "$SWAP_SIZE" -gt 0 ]; then
@@ -311,13 +310,13 @@ arch-chroot /mnt systemctl enable ufw
 
 # = Oh My Zsh = #
 
-# Install Oh My Zsh for the root user
+# Install Oh My Zsh for the root user without changing the shell or running Zsh
 echo "Installing Oh My Zsh for the root user..."
-arch-chroot /mnt sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+arch-chroot /mnt sh -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# Install Oh My Zsh for the new user
+# Install Oh My Zsh for the new user without changing the shell or running Zsh
 echo "Installing Oh My Zsh for the new user..."
-arch-chroot /mnt su - "$USER_NAME" -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+arch-chroot /mnt su - "$USER_NAME" -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Create the custom theme directory for the root user
 arch-chroot /mnt mkdir -p /root/.oh-my-zsh/custom/themes
@@ -486,9 +485,8 @@ arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/D
 
 # Apply the dotfiles
 echo "Applying the dotfiles..."
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r /home/$USER_NAME/.dotfiles/.config/* /home/$USER_NAME/.config/"
-arch-chroot /mnt su - "$USER_NAME" -c "cp /home/$USER_NAME/.dotfiles/.xinitrc /home/$USER_NAME/"
-arch-chroot /mnt su - "$USER_NAME" -c "cp /home/$USER_NAME/.dotfiles/.Xresources /home/$USER_NAME/"
+arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p /home/$USER_NAME/.config"
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r /home/$USER_NAME/.dotfiles/* /home/$USER_NAME/.config/."
 
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
