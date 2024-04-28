@@ -86,8 +86,24 @@ list_devices() {
 }
 
 
+# === Cleanup Function === #
 
+cleanup() {
+    echo -e "${RED}Error detected, cleaning up...${NC}"
+    # Unmount partitions in reverse order of mounting
+    umount /mnt/boot/efi || true
+    # Optionally deactivate swap if it was activated
+    swapoff /mnt/swapfile || true
+    # Unbind /lib/modules if it was bound
+    umount /mnt/lib/modules || true
+    fuser -km /mnt || true
+    sleep 2
+    umount -R /mnt || true
+    # Any other cleanup tasks can be added here
+    echo -e "${RED}Cleanup complete. You may now attempt to rerun the script or perform manual fixes.${NC}"
+}
 
+trap cleanup ERR EXIT
 
 
 
@@ -363,7 +379,6 @@ arch-chroot /mnt pacman -S --noconfirm tlp tlp-rdw
 # Enable TLP services
 echo -e "${BOLD_BRIGHT_BLUE}Enabling TLP services...${NC}"
 arch-chroot /mnt systemctl enable tlp.service
-arch-chroot /mnt systemctl enable tlp-sleep.service
 
 
 
