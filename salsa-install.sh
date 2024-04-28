@@ -103,7 +103,10 @@ cleanup() {
     echo -e "${RED}Cleanup complete. You may now attempt to rerun the script or perform manual fixes.${NC}"
 }
 
-trap cleanup ERR EXIT
+trap cleanup ERR
+
+
+
 
 
 
@@ -215,6 +218,8 @@ if [[ $CONFIRM != [yY] ]]; then
     echo -e "${RED}Installation aborted by user.${NC}"
     exit 1
 fi
+
+
 
 
 
@@ -390,29 +395,32 @@ arch-chroot /mnt systemctl enable tlp.service
 
 # = Graphics Drivers = #
 
+# Check if lspci is available
+if ! command -v lspci &> /dev/null; then
+    echo -e "${BOLD_BRIGHT_BLUE}lspci command not found. Installing pciutils...${NC}"
+    arch-chroot /mnt pacman -S --noconfirm pciutils
+fi
+
 # Detect and install graphics drivers
 echo -e "${BOLD_BRIGHT_BLUE}Detecting and installing graphics drivers...${NC}"
 
-# Detect Intel and NVIDIA graphics
+# Detect Intel, AMD, and NVIDIA graphics
 intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "yes" || echo "no")
+amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "yes" || echo "no")
 nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || echo "no")
-
-# Install Intel drivers only if Intel is detected and NVIDIA is not
-if [ "$intel_detected" = "yes" ] && [ "$nvidia_detected" = "no" ]; then
-    echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
-fi
-
-# Install AMD drivers if AMD graphics are detected
-if lspci | grep -E "VGA|3D" | grep -qi amd; then
-    echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
-fi
 
 # Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
+# Install Intel drivers only if Intel is detected and NVIDIA is not
+elif [ "$intel_detected" = "yes" ]; then
+    echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
+    arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+# Install AMD drivers if AMD graphics are detected
+elif [ "$amd_detected" = "yes" ]; then
+    echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
+    arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
 fi
 
 
@@ -433,10 +441,6 @@ if grep -qi amd /proc/cpuinfo; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD CPU detected. Installing microcode...${NC}"
     arch-chroot /mnt pacman -S --noconfirm amd-ucode
 fi
-
-# Regenerate initramfs to include microcode updates
-echo -e "${BOLD_BRIGHT_BLUE}Regenerating initramfs...${NC}"
-arch-chroot /mnt mkinitcpio -P
 
 
 
@@ -471,6 +475,15 @@ arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
 
 
 # === Level 4 Installation === #
+
+echo -e "${YELLOW}Temporarily making sudo passwordless${NC}"
+
+# Backup the original sudoers file
+arch-chroot /mnt cp /etc/sudoers /etc/sudoers.bak
+
+# Add the user to the sudoers file with NOPASSWD
+echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/USER_NAME
+
 
 # Define an array of packages to install
 PACKAGES=(
@@ -528,6 +541,16 @@ arch-chroot /mnt pacman -Scc --noconfirm
 # Finish up
 echo -e "${BOLD_BRIGHT_BLUE}Finishing up the desktop environment installation...${NC}"
 echo -e "${GREEN}Desktop environment installation complete. Please reboot into the new system.${NC}"
+
+
+
+
+
+# Restore the original sudoers file
+arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
+
+# Disable the error trap
+trap - ERR
 
 
 
