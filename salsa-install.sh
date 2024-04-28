@@ -230,7 +230,7 @@ mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
-pacstrap /mnt base linux linux-firmware grub efibootmgr zsh curl wget git nano
+pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr zsh curl wget git nano
 
 
 # Configure the system
@@ -294,6 +294,10 @@ arch-chroot /mnt systemctl enable systemd-timesyncd.service
 arch-chroot /mnt systemctl start systemd-timesyncd.service
 
 
+# Create the /mnt/lib/modules directory
+mkdir -p /mnt/lib/modules
+mount --bind /lib/modules /mnt/lib/modules
+
 # Install and setup UFW
 echo -e "${BOLD_BRIGHT_BLUE}Installing and setting up UFW (Uncomplicated Firewall)...${NC}"
 arch-chroot /mnt pacman -S --noconfirm ufw
@@ -305,6 +309,9 @@ arch-chroot /mnt ufw enable
 # Enable UFW to start on boot
 arch-chroot /mnt systemctl enable ufw
 
+
+# Unbind /lib/modules after setting up UFW and before enabling any services
+umount /mnt/lib/modules
 
 
 
@@ -336,13 +343,16 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 
 # Install Yay AUR Helper
 echo -e "${BOLD_BRIGHT_BLUE}Installing Yay AUR Helper...${NC}"
-arch-chroot /mnt pacman -S --needed --noconfirm git base-devel
+arch-chroot /mnt pacman -S --needed --noconfirm git base-devel go
 arch-chroot /mnt su - "$USER_NAME" -c "bash -c '\
-    git clone https://aur.archlinux.org/yay.git /tmp/yay && \
-    cd /tmp/yay && \
-    makepkg -si --noconfirm && \
-    rm -rf /tmp/yay \
+    mkdir -p ~/yay_build && \
+    git clone https://aur.archlinux.org/yay.git ~/yay_build/yay && \
+    cd ~/yay_build/yay && \
+    makepkg --noconfirm \
 '"
+# Use find to locate the package file and install it
+arch-chroot /mnt bash -c "pacman -U \$(find /home/$USER_NAME/yay_build/yay -name 'yay-*.pkg.tar.zst') --noconfirm"
+arch-chroot /mnt rm -rf /home/"$USER_NAME"/yay_build
 
 # = TLP = #
 
@@ -512,5 +522,6 @@ echo -e "${GREEN}Desktop environment installation complete. Please reboot into t
 echo -e "${BOLD_BRIGHT_BLUE}Finishing up the installation...${NC}"
 fuser -km /mnt
 sleep 2
+umount /mnt/lib/modules
 umount -R /mnt
 echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
