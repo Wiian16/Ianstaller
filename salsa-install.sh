@@ -206,7 +206,7 @@ echo -e "${BRIGHT_BLUE}Timezone:${NC} $TIMEZONE"
 echo -e "${BRIGHT_BLUE}New user:${NC} $USER_NAME"
 echo -e "${BRIGHT_BLUE}User password:${NC} (hidden)"
 echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
-echo -e "${BLBRIGHT_BLUEUE}Root Partition:${NC} $ROOT_PARTITION"
+echo -e "${BRIGHT_BLUEUE}Root Partition:${NC} $ROOT_PARTITION"
 if [ "$SWAP_SIZE" -gt 0 ]; then
     echo -e "${BRIGHT_BLUE}Swap File Size:${NC} ${SWAP_SIZE}GiB"
 else
@@ -227,6 +227,13 @@ fi
 
 
 # === Level 0 Installation === #
+
+# Modify pacman.conf on Arch ISO
+echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on Arch ISO...${NC}"
+sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
+sed -i 's/^#Color/Color/' /etc/pacman.conf
+echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on Arch ISO.${NC}"
+echo
 
 # Partition the disk
 echo -e "${BOLD_BRIGHT_BLUE}Partitioning the disk...${NC}"
@@ -249,6 +256,14 @@ mkdir -p /mnt/boot/efi
 mount "$EFI_PARTITION" /mnt/boot/efi
 
 
+# Modify pacman.conf on the new system
+echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on the new system...${NC}"
+arch-chroot /mnt sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
+arch-chroot /mnt sed -i 's/^#Color/Color/' /etc/pacman.conf
+echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on the new system.${NC}"
+echo
+
+
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
 pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr zsh curl wget git nano
@@ -256,12 +271,18 @@ pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr zsh curl w
 
 # Configure the system
 echo -e "${BOLD_BRIGHT_BLUE}Configuring the system...${NC}"
+
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
 arch-chroot /mnt hwclock --systohc
+
 echo "$HOSTNAME" > /mnt/etc/hostname
-echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
+
+# Set the locale to en_US.UTF-8
+arch-chroot /mnt sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+arch-chroot /mnt echo "LANG=en_US.UTF-8" > /etc/locale.conf
 arch-chroot /mnt locale-gen
+
 echo "KEYMAP=us" > /mnt/etc/vconsole.conf
 echo "127.0.0.1 localhost" >> /mnt/etc/hosts
 echo "::1       localhost" >> /mnt/etc/hosts
@@ -413,6 +434,25 @@ nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || ec
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
+
+    # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
+    echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
+    if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
+        arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
+    else
+        echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
+    fi
+    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+    # Add NVIDIA modules to mkinitcpio.conf
+    echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
+    if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
+        arch-chroot /mnt sed -i '/^MODULES=(/s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm&/' /etc/mkinitcpio.conf
+    else
+        echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
+    fi
+    arch-chroot /mnt mkinitcpio -P
+    
 # Install Intel drivers only if Intel is detected and NVIDIA is not
 elif [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
@@ -496,17 +536,24 @@ PACKAGES=(
     # Terminal emulator, file manager, and utilities
     thunar alacritty neofetch
     # Polybar, picom, dunst, and conky
-    polybar picom dunst conky
+    polybar picom dunst conky 
     # Fonts
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
 
-    # Other packages for config files
+    # Other
     rofi feh copyq mpc alsa-utils pulseaudio playerctl
     discord neovim ranger htop
+    sed jq feh imagemagick libnotify
+    pastel
+
+    gnome-keyring libsecret
 )
 
 AUR_PACKAGES=(
-    google-chrome ksuperkey xfce-polkit
+    google-chrome 
+    ksuperkey 
+    xfce-polkit
+    python-pywal
 )
 
 
@@ -560,6 +607,6 @@ trap - ERR
 echo -e "${BOLD_BRIGHT_BLUE}Finishing up the installation...${NC}"
 fuser -km /mnt
 sleep 2
-umount /mnt/lib/modules
-umount -R /mnt
+umount /mnt/lib/modules || true
+umount -R /mnt || true
 echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
