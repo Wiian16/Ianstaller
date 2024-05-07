@@ -572,10 +572,64 @@ arch-chroot /mnt systemctl enable sddm.service
 echo -e "${BOLD_BRIGHT_BLUE}Cloning the user's dotfiles repository...${NC}"
 arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/DotFiles.git /home/$USER_NAME/.dotfiles"
 
-# Apply the dotfiles
-echo -e "${BOLD_BRIGHT_BLUE}Applying the dotfiles...${NC}"
-arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p /home/$USER_NAME/.config"
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r /home/$USER_NAME/.dotfiles/* /home/$USER_NAME/.config/."
+
+# === Apply Dotfiles === #
+
+# Define the user's home directory
+USER_HOME="/home/$USER_NAME"
+
+# Define the dotfiles directory
+DOTFILES_DIR="$USER_HOME/.dotfiles"
+
+# Function to copy dotfiles to the appropriate location
+copy_dotfiles() {
+    local src=$1
+    local dest=$2
+    arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$dest\""
+    arch-chroot /mnt su - "$USER_NAME" -c "cp -ar \"$src\" \"$dest\""
+}
+
+# Copy the main configuration files
+copy_dotfiles "$DOTFILES_DIR/alacritty" "$USER_HOME/.config/alacritty"
+copy_dotfiles "$DOTFILES_DIR/bspwm" "$USER_HOME/.config/bspwm"
+copy_dotfiles "$DOTFILES_DIR/conky" "$USER_HOME/.config/conky"
+copy_dotfiles "$DOTFILES_DIR/dunst" "$USER_HOME/.config/dunst"
+copy_dotfiles "$DOTFILES_DIR/neofetch" "$USER_HOME/.config/neofetch"
+copy_dotfiles "$DOTFILES_DIR/picom" "$USER_HOME/.config/picom"
+copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
+copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
+copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
+
+# Handle X11 configuration
+arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
+arch-chroot /mnt cp "$DOTFILES_DIR/X11/"* "/etc/X11/xorg.conf.d/"
+
+# Handle wallpapers
+arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/wallpapers/* \"$USER_HOME/Pictures/Wallpapers/."
+
+# Handle fonts
+arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/.local/share/fonts\""
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/fonts/* \"$USER_HOME/.local/share/fonts/."
+arch-chroot /mnt su - "$USER_NAME" -c "fc-cache -fv"
+
+# Handle SDDM theme
+SDDM_THEME_NAME="vines"
+arch-chroot /mnt mkdir -p "/usr/share/sddm/themes/${SDDM_THEME_NAME}"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/SDDM-Themes/$SDDM_THEME_NAME" "/usr/share/sddm/themes/${SDDM_THEME_NAME}"
+
+# Update SDDM configuration
+if ! arch-chroot /mnt grep -q "\[Theme\]" /etc/sddm.conf; then
+    arch-chroot /mnt bash -c "echo -e '\n[Theme]' >> /etc/sddm.conf"
+fi
+if ! arch-chroot /mnt grep -q "^Current=" /etc/sddm.conf; then
+    arch-chroot /mnt sed -i "/^\[Theme\]/aCurrent=${SDDM_THEME_NAME}" /etc/sddm.conf
+else
+    arch-chroot /mnt sed -i "s/^Current=.*/Current=${SDDM_THEME_NAME}/" /etc/sddm.conf
+fi
+
+
+
 
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
