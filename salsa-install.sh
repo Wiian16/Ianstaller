@@ -206,7 +206,7 @@ echo -e "${BRIGHT_BLUE}Timezone:${NC} $TIMEZONE"
 echo -e "${BRIGHT_BLUE}New user:${NC} $USER_NAME"
 echo -e "${BRIGHT_BLUE}User password:${NC} (hidden)"
 echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
-echo -e "${BRIGHT_BLUEUE}Root Partition:${NC} $ROOT_PARTITION"
+echo -e "${BRIGHT_BLUE}Root Partition:${NC} $ROOT_PARTITION"
 if [ "$SWAP_SIZE" -gt 0 ]; then
     echo -e "${BRIGHT_BLUE}Swap File Size:${NC} ${SWAP_SIZE}GiB"
 else
@@ -256,14 +256,6 @@ mkdir -p /mnt/boot/efi
 mount "$EFI_PARTITION" /mnt/boot/efi
 
 
-# Modify pacman.conf on the new system
-echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on the new system...${NC}"
-arch-chroot /mnt sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
-arch-chroot /mnt sed -i 's/^#Color/Color/' /etc/pacman.conf
-echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on the new system.${NC}"
-echo
-
-
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
 pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr zsh curl wget git nano
@@ -295,6 +287,13 @@ arch-chroot /mnt chsh -s /bin/zsh root
 echo -e "${BOLD_BRIGHT_BLUE}Installing and configuring the bootloader...${NC}"
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+# Modify pacman.conf on the new system
+echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on the new system...${NC}"
+arch-chroot /mnt sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
+arch-chroot /mnt sed -i 's/^#Color/Color/' /etc/pacman.conf
+echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on the new system.${NC}"
+echo
 
 
 
@@ -452,7 +451,7 @@ if [ "$nvidia_detected" = "yes" ]; then
         echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
     fi
     arch-chroot /mnt mkinitcpio -P
-    
+
 # Install Intel drivers only if Intel is detected and NVIDIA is not
 elif [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
