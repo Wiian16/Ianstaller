@@ -546,6 +546,7 @@ PACKAGES=(
     pastel
 
     gnome-keyring libsecret
+    qt5
 )
 
 AUR_PACKAGES=(
@@ -553,6 +554,7 @@ AUR_PACKAGES=(
     ksuperkey 
     xfce-polkit
     python-pywal
+    ksuperkey
 )
 
 
@@ -586,7 +588,7 @@ copy_dotfiles() {
     local src=$1
     local dest=$2
     arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$dest\""
-    arch-chroot /mnt su - "$USER_NAME" -c "cp -ar \"$src\" \"$dest\""
+    arch-chroot /mnt su - "$USER_NAME" -c "cp -ar \"$src\"/* \"$dest\"/"
 }
 
 # Copy the main configuration files
@@ -602,31 +604,56 @@ copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 
 # Handle X11 configuration
 arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
-arch-chroot /mnt cp "$DOTFILES_DIR/X11/"* "/etc/X11/xorg.conf.d/"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/X11/." "/etc/X11/xorg.conf.d/"
 
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/wallpapers/* \"$USER_HOME/Pictures/Wallpapers/."
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$USER_HOME/Pictures/Wallpapers/\""
 
 # Handle fonts
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/.local/share/fonts\""
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/fonts/* \"$USER_HOME/.local/share/fonts/."
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/fonts/* \"$USER_HOME/.local/share/fonts/\""
 arch-chroot /mnt su - "$USER_NAME" -c "fc-cache -fv"
 
 # Handle SDDM theme
 SDDM_THEME_NAME="vines"
 arch-chroot /mnt mkdir -p "/usr/share/sddm/themes/${SDDM_THEME_NAME}"
-arch-chroot /mnt cp -r "$DOTFILES_DIR/SDDM-Themes/$SDDM_THEME_NAME" "/usr/share/sddm/themes/${SDDM_THEME_NAME}"
+arch-chroot /mnt sh -c "cp -r '$DOTFILES_DIR/SDDM-Themes/$SDDM_THEME_NAME/'* '/usr/share/sddm/themes/${SDDM_THEME_NAME}/'"
+
+arch-chroot /mnt sh -c "cp /usr/lib/sddm/sddm.conf.d/default.conf /etc/sddm.conf"
 
 # Update SDDM configuration
 if ! arch-chroot /mnt grep -q "\[Theme\]" /etc/sddm.conf; then
     arch-chroot /mnt bash -c "echo -e '\n[Theme]' >> /etc/sddm.conf"
 fi
 if ! arch-chroot /mnt grep -q "^Current=" /etc/sddm.conf; then
-    arch-chroot /mnt sed -i "/^\[Theme\]/aCurrent=${SDDM_THEME_NAME}" /etc/sddm.conf
+    arch-chroot /mnt sed -i "/^\[Theme\]/aCurrent=$SDDM_THEME_NAME" /etc/sddm.conf
 else
-    arch-chroot /mnt sed -i "s/^Current=.*/Current=${SDDM_THEME_NAME}/" /etc/sddm.conf
+    arch-chroot /mnt sed -i "s/^Current=.*/Current=$SDDM_THEME_NAME/" /etc/sddm.conf
 fi
+
+
+# Add custom aliases and functions to .zshrc
+arch-chroot /mnt su - "$USER_NAME" -c "cat >> \"$USER_HOME/.zshrc\" << 'EOF'
+
+function cdls() {
+  if builtin cd \"\$@\"; then
+    ls
+  else
+    return \$?  # Return the exit status of the cd command
+  fi
+}
+
+if [[ \$- == *i* ]]; then
+  alias cd='cdls'
+fi
+
+alias la=\"ls -a\"
+alias nf=\"clear && neofetch\"
+alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
+alias nv=\"nvim\"
+alias cls=\"clear\"
+EOF"
 
 
 
