@@ -610,6 +610,9 @@ arch-chroot /mnt cp -r "$DOTFILES_DIR/X11/." "/etc/X11/xorg.conf.d/"
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
 arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$USER_HOME/Pictures/Wallpapers/\""
 
+# Create .fehbg file and make it executable
+arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/WhiteClover_TimothyDykes.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
+
 # Handle fonts
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/.local/share/fonts\""
 arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/fonts/* \"$USER_HOME/.local/share/fonts/\""
