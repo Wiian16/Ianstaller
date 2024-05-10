@@ -415,53 +415,75 @@ arch-chroot /mnt systemctl enable tlp.service
 
 # = Graphics Drivers = #
 
-# Check if lspci is available
-if ! command -v lspci &> /dev/null; then
-    echo -e "${BOLD_BRIGHT_BLUE}lspci command not found. Installing pciutils...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm pciutils
-fi
+# Detect if running in a VM
+vm_detected=$(systemd-detect-virt)
 
-# Detect and install graphics drivers
-echo -e "${BOLD_BRIGHT_BLUE}Detecting and installing graphics drivers...${NC}"
-
-# Detect Intel, AMD, and NVIDIA graphics
-intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "yes" || echo "no")
-amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "yes" || echo "no")
-nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || echo "no")
-
-# Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
-if [ "$nvidia_detected" = "yes" ]; then
-    echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
-
-    # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
-    echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
-    if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
-        arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
-    else
-        echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
+# Install VM-specific graphics drivers
+if [ "$vm_detected" != "none" ]; then
+    echo -e "${BOLD_BRIGHT_BLUE}Running in a VM. Installing VM-specific graphics drivers...${NC}"
+    case "$vm_detected" in
+        oracle) # VirtualBox
+            arch-chroot /mnt pacman -S --noconfirm virtualbox-guest-utils
+            arch-chroot /mnt systemctl enable vboxservice
+            ;;
+        vmware) # VMware
+            arch-chroot /mnt pacman -S --noconfirm open-vm-tools
+            arch-chroot /mnt systemctl enable vmtoolsd
+            ;;
+        kvm) # QEMU/KVM with QXL
+            arch-chroot /mnt pacman -S --noconfirm spice-vdagent
+            arch-chroot /mnt systemctl enable spice-vdagentd
+            ;;
+        # Add additional cases for other hypervisors if necessary
+    esac
+else
+    # Check if lspci is available
+    if ! command -v lspci &> /dev/null; then
+        echo -e "${BOLD_BRIGHT_BLUE}lspci command not found. Installing pciutils...${NC}"
+        arch-chroot /mnt pacman -S --noconfirm pciutils
     fi
-    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
-    # Add NVIDIA modules to mkinitcpio.conf
-    echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
-    if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
-        arch-chroot /mnt sed -i '/^MODULES=(/s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm&/' /etc/mkinitcpio.conf
-    else
-        echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
+    # Detect and install graphics drivers
+    echo -e "${BOLD_BRIGHT_BLUE}Detecting and installing graphics drivers...${NC}"
+
+    # Detect Intel, AMD, and NVIDIA graphics
+    intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "yes" || echo "no")
+    amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "yes" || echo "no")
+    nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || echo "no")
+
+    # Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
+    if [ "$nvidia_detected" = "yes" ]; then
+        echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
+        arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
+
+        # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
+        echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
+        if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
+            arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
+        else
+            echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
+        fi
+        arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+        # Add NVIDIA modules to mkinitcpio.conf
+        echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
+        if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
+            arch-chroot /mnt sed -i '/^MODULES=(/s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm&/' /etc/mkinitcpio.conf
+        else
+            echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
+        fi
+        arch-chroot /mnt mkinitcpio -P
+
+    # Install Intel drivers only if Intel is detected and NVIDIA is not
+    elif [ "$intel_detected" = "yes" ]; then
+        echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
+        arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+    # Install AMD drivers if AMD graphics are detected
+    elif [ "$amd_detected" = "yes" ]; then
+        echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
+        arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
     fi
-    arch-chroot /mnt mkinitcpio -P
-
-# Install Intel drivers only if Intel is detected and NVIDIA is not
-elif [ "$intel_detected" = "yes" ]; then
-    echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
-# Install AMD drivers if AMD graphics are detected
-elif [ "$amd_detected" = "yes" ]; then
-    echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
 fi
-
 
 
 # = Micro Code = #
