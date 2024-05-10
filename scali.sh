@@ -626,6 +626,11 @@ copy_dotfiles "$DOTFILES_DIR/picom" "$USER_HOME/.config/picom"
 copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
 copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
+copy_dotfiles "$DOTFILES_DIR/settings.ini" "$USER_HOME/.config/gtk-3.0"
+
+# Theme Files
+copy_dotfiles "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
+copy_dotfiles "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
 
 # Handle X11 configuration
 arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
