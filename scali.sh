@@ -561,6 +561,8 @@ AUR_PACKAGES=(
     papirus-nord
     nordic-darker-theme
     i3lock-fancy-rapid
+    code
+    copyq
 )
 
 
