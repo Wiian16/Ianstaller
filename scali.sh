@@ -573,6 +573,8 @@ PACKAGES=(
     tumbler
     file-roller
     xarchiver
+    xcolor
+    rofi-calc
 )
 
 AUR_PACKAGES=(
@@ -619,6 +621,14 @@ copy_dotfiles() {
     arch-chroot /mnt su - "$USER_NAME" -c "cp -ar \"$src\"/* \"$dest\"/"
 }
 
+# Function to copy system-wide files
+copy_system_files() {
+    local src=$1
+    local dest=$2
+    arch-chroot /mnt cp -ar "$src"/* "$dest"/
+}
+
+
 # Copy the main configuration files
 copy_dotfiles "$DOTFILES_DIR/alacritty" "$USER_HOME/.config/alacritty"
 copy_dotfiles "$DOTFILES_DIR/bspwm" "$USER_HOME/.config/bspwm"
@@ -631,9 +641,10 @@ copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 copy_dotfiles "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
-# Theme Files
-copy_dotfiles "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
-copy_dotfiles "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
+# Copy system-wide files
+copy_system_files "$DOTFILES_DIR/conky/Celaeno/fonts" "/usr/share/fonts/"
+copy_system_files "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
+copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
 
 # Handle X11 configuration
 arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
