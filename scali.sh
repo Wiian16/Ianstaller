@@ -679,6 +679,7 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 # Clean up
 echo -e "${BOLD_BRIGHT_BLUE}Cleaning up...${NC}"
 arch-chroot /mnt pacman -Scc --noconfirm
+arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -Scc --noconfirm"
 echo -e "${GREEN}Desktop environment installation complete.${NC}"
 
 
