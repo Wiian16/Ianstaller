@@ -623,12 +623,12 @@ arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$U
 arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
 
 # Handle fonts
-arch-chroot /mnt cp "$DOTFILES_DIR"/fonts/* /usr/share/fonts/
+arch-chroot /mnt /bin/bash -c "cp \"$DOTFILES_DIR\"/fonts/* /usr/share/fonts/"
 arch-chroot /mnt fc-cache -fv
 
 # Handle X11 configuration
 arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
-arch-chroot /mnt cp -r "$DOTFILES_DIR"/X11/* "/etc/X11/xorg.conf.d/"
+arch-chroot /mnt /bin/bash -c "cp -r \"$DOTFILES_DIR\"/X11/* /etc/X11/xorg.conf.d/"
 
 # Handle SDDM theme
 SDDM_THEME_NAME="vines"
