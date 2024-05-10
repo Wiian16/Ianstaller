@@ -646,21 +646,21 @@ copy_system_files "$DOTFILES_DIR/conky/Celaeno/fonts" "/usr/share/fonts/"
 copy_system_files "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
 copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
 
-# Handle X11 configuration
-arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
-arch-chroot /mnt cp -r "$DOTFILES_DIR/X11/." "/etc/X11/xorg.conf.d/"
-
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
 arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$USER_HOME/Pictures/Wallpapers/\""
 
 # Create .fehbg file and make it executable
-arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/WhiteClover_TimothyDykes.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
+arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
 
 # Handle fonts
-arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/.local/share/fonts\""
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r $DOTFILES_DIR/fonts/* \"$USER_HOME/.local/share/fonts/\""
-arch-chroot /mnt su - "$USER_NAME" -c "fc-cache -fv"
+arch-chroot /mnt mkdir -p /usr/share/fonts
+arch-chroot /mnt cp -r "$DOTFILES_DIR"/fonts/* /usr/share/fonts/
+arch-chroot /mnt fc-cache -fv
+
+# Handle X11 configuration
+arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/X11/." "/etc/X11/xorg.conf.d/"
 
 # Handle SDDM theme
 SDDM_THEME_NAME="vines"
