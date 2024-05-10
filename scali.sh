@@ -612,7 +612,6 @@ arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
 # Handle Theme
-arch-chroot /mnt mkdir /usr/share/icons/
 arch-chroot /mnt cp "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
 copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
 
@@ -624,7 +623,6 @@ arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$U
 arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
 
 # Handle fonts
-arch-chroot /mnt mkdir -p /usr/share/fonts
 arch-chroot /mnt cp "$DOTFILES_DIR"/fonts/* /usr/share/fonts/
 arch-chroot /mnt fc-cache -fv
 
