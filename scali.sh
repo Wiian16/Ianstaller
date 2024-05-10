@@ -6,7 +6,7 @@ set -o pipefail
 # === Setup === #
 
 # Set up logging
-exec > >(tee arch_install.log)
+exec > >(tee scali.log)
 exec 2>&1
 
 # Define colors for output
@@ -120,7 +120,7 @@ trap cleanup ERR
 clear
 
 # Display welcome message
-echo -e "${GREEN}Sam's Arch Linux Setup Assistant${NC}"
+echo -e "${GREEN}Sam's Custom Arch Linux Installer${NC}"
 echo -e "${BRIGHT_BLUE}-------------------------------------------------${NC}"
 
 # Ask for hostname with validation
