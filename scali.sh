@@ -620,7 +620,6 @@ arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
 # Copy system-wide files
-copy_system_files "$DOTFILES_DIR/conky/Celaeno/fonts" "/usr/share/fonts/"
 copy_system_files "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
 copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
 
