@@ -612,8 +612,8 @@ arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
 # Handle Theme
-arch-chroot /mnt cp "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
-copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
 
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
