@@ -232,7 +232,7 @@ fi
 echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on Arch ISO...${NC}"
 sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 sed -i 's/^#Color/Color/' /etc/pacman.conf
-echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on Arch ISO.${NC}"
+echo -e "${BOLD_BRIGHT_BLUE}Enabled parallel downloads and color in pacman.conf on Arch ISO.${NC}"
 echo
 
 # Partition the disk
@@ -569,6 +569,8 @@ PACKAGES=(
 
     gnome-keyring libsecret
     qt5
+    tree
+    tumbler
 )
 
 AUR_PACKAGES=(
@@ -576,7 +578,8 @@ AUR_PACKAGES=(
     ksuperkey 
     xfce-polkit
     python-pywal
-    ksuperkey
+    papirus-nord
+    nordic-darker-theme
 )
 
 
@@ -689,29 +692,24 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 # Clean up
 echo -e "${BOLD_BRIGHT_BLUE}Cleaning up...${NC}"
 arch-chroot /mnt pacman -Scc --noconfirm
+arch-chroot /mnt yay -Scc --noconfirm
+echo -e "${GREEN}Desktop environment installation complete.${NC}"
 
-# Finish up
-echo -e "${BOLD_BRIGHT_BLUE}Finishing up the desktop environment installation...${NC}"
-echo -e "${GREEN}Desktop environment installation complete. Please reboot into the new system.${NC}"
-
-
-
-
-
-# Restore the original sudoers file
-arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
 
 # Disable the error trap
 trap - ERR
 
 
-
-
 # === Finish Installation === #
 
 echo -e "${BOLD_BRIGHT_BLUE}Finishing up the installation...${NC}"
+
+# Restore the original sudoers file
+arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
+
 fuser -km /mnt
 sleep 2
 umount /mnt/lib/modules || true
 umount -R /mnt || true
+
 echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
