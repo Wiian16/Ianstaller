@@ -597,14 +597,6 @@ copy_dotfiles() {
     arch-chroot /mnt su - "$USER_NAME" -c "cp -ar \"$src\"/* \"$dest\"/"
 }
 
-# Function to copy system-wide files
-copy_system_files() {
-    local src=$1
-    local dest=$2
-    arch-chroot /mnt cp -ar "$src"/* "$dest"/
-}
-
-
 # Copy the main configuration files
 copy_dotfiles "$DOTFILES_DIR/alacritty" "$USER_HOME/.config/alacritty"
 copy_dotfiles "$DOTFILES_DIR/bspwm" "$USER_HOME/.config/bspwm"
@@ -619,9 +611,10 @@ copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
-# Copy system-wide files
-copy_system_files "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
-copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons/Nordic-Folders"
+# Handle Theme
+arch-chroot /mnt mkdir /usr/share/icons/
+arch-chroot /mnt cp "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
+copy_system_files "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
 
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
@@ -632,12 +625,12 @@ arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-f
 
 # Handle fonts
 arch-chroot /mnt mkdir -p /usr/share/fonts
-arch-chroot /mnt cp -r "$DOTFILES_DIR"/fonts/* /usr/share/fonts/
+arch-chroot /mnt cp "$DOTFILES_DIR"/fonts/* /usr/share/fonts/
 arch-chroot /mnt fc-cache -fv
 
 # Handle X11 configuration
 arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
-arch-chroot /mnt cp -r "$DOTFILES_DIR/X11/." "/etc/X11/xorg.conf.d/"
+arch-chroot /mnt cp -r "$DOTFILES_DIR"/X11/* "/etc/X11/xorg.conf.d/"
 
 # Handle SDDM theme
 SDDM_THEME_NAME="vines"
