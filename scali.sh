@@ -571,6 +571,8 @@ PACKAGES=(
     qt5
     tree
     tumbler
+    file-roller
+    xarchiver
 )
 
 AUR_PACKAGES=(
@@ -580,6 +582,7 @@ AUR_PACKAGES=(
     python-pywal
     papirus-nord
     nordic-darker-theme
+    i3lock-fancy-rapid
 )
 
 
@@ -626,7 +629,7 @@ copy_dotfiles "$DOTFILES_DIR/picom" "$USER_HOME/.config/picom"
 copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
 copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
-copy_dotfiles "$DOTFILES_DIR/settings.ini" "$USER_HOME/.config/gtk-3.0"
+copy_dotfiles "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 
 # Theme Files
 copy_dotfiles "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons/Nordic-Cursors"
