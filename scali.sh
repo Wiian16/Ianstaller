@@ -570,7 +570,7 @@ arch-chroot /mnt pacman -S --noconfirm "${PACKAGES[@]}"
 
 # Install all AUR packages in the array
 echo -e "${BOLD_BRIGHT_BLUE}Installing AUR packages...${NC}"
-arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -S --noconfirm ${AUR_PACKAGES[@]}"
+arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -S --noconfirm \"${AUR_PACKAGES[@]}\""
 
 # Enable SDDM
 echo -e "${BOLD_BRIGHT_BLUE}Enabling SDDM...${NC}"
@@ -679,7 +679,6 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 # Clean up
 echo -e "${BOLD_BRIGHT_BLUE}Cleaning up...${NC}"
 arch-chroot /mnt pacman -Scc --noconfirm
-arch-chroot /mnt yay -Scc --noconfirm
 echo -e "${GREEN}Desktop environment installation complete.${NC}"
 
 
