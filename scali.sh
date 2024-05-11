@@ -592,7 +592,7 @@ PACKAGES=(
 
     # Desktop Depends
     rofi feh copyq mpc alsa-utils pulseaudio playerctl
-    discord neovim ranger htop rofi-calc
+    neovim ranger htop rofi-calc
     sed jq feh imagemagick libnotify
     pastel file-roller tumbler xarchiver xcolor
 
@@ -606,19 +606,25 @@ PACKAGES=(
     man
     gparted
 
+    # Applications
+    code
+    gimp
+    discord
+
 )
 
 AUR_PACKAGES=(
-    google-chrome 
     ksuperkey 
     xfce-polkit
     python-pywal
     nordic-darker-theme
-    code
     copyq
     i3lock-color
     i3lock-fancy-rapid-git
     qt5-styleplugins
+
+    # Applications
+    google-chrome 
 )
 
 
