@@ -328,7 +328,8 @@ arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on the new system...${NC}"
 arch-chroot /mnt sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 arch-chroot /mnt sed -i 's/^#Color/Color/' /etc/pacman.conf
-echo -e "${GREEN}Enabled parallel downloads and color in pacman.conf on the new system.${NC}"
+arch-chroot /mnt sed -i '/^#\[multilib\]/{N;s/^#\(\[multilib\]\n\)#Include/\\1Include/}' /etc/pacman.conf
+echo -e "${GREEN}Enabled parallel downloads, multilib, and color in pacman.conf on the new system.${NC}"
 echo
 
 
