@@ -551,6 +551,7 @@ PACKAGES=(
     xarchiver
     xcolor
     rofi-calc
+    xapp
 )
 
 AUR_PACKAGES=(
