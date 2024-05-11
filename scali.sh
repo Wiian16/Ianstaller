@@ -760,7 +760,7 @@ arch-chroot /mnt su - "$USER_NAME" -c "xdg-user-dirs-update"
 arch-chroot /mnt rm -rf $USER_HOME/Public $USER_HOME/Templates $USER_HOME/.zcompdump-* $USER_HOME/.bashrc $USER_HOME/.bash_logout $USER_HOME/.bash_profile $USER_HOME/.dotfiles
 
 # Remove Garbage Apps
-arch-chroot /mnt rm /usr/share/applications/avahi-discover.desktop /usr/share/applications/bssh.desktop /usr/share/applications/bvnc.desktop 
+arch-chroot /mnt rm /usr/share/applications/avahi-discover.desktop /usr/share/applications/bssh.desktop /usr/share/applications/bvnc.desktop /usr/share/applications/xfce4-about.desktop
 
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
