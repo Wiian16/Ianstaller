@@ -348,7 +348,7 @@ echo "Setting up sudo..."
 # Install sudo if it's not already installed
 arch-chroot /mnt pacman -S --noconfirm sudo
 # Uncomment to allow members of group wheel to execute any command
-#arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers
+#arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 echo "%wheel ALL=(ALL:ALL) ALL" | arch-chroot /mnt tee -a /etc/sudoers > /dev/null
 
 # Set up a swap file
