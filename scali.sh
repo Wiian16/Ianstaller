@@ -538,6 +538,23 @@ arch-chroot /mnt systemctl enable bluetooth.service
 arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
 
 
+# Create and enable udiskie service for automounting USB drives
+arch-chroot /mnt /bin/bash -c 'cat > /etc/systemd/system/udiskie.service <<EOF
+[Unit]
+Description=Automount USB drives with udiskie
+
+[Service]
+ExecStart=/usr/bin/udiskie -a
+
+[Install]
+WantedBy=default.target
+EOF'
+
+# Enable the udiskie service so it starts on boot
+arch-chroot /mnt systemctl enable udiskie.service
+
+
+
 
 
 
@@ -620,23 +637,6 @@ arch-chroot /mnt systemctl enable sddm.service
 # Clone the user's dotfiles repository
 echo -e "${BOLD_BRIGHT_BLUE}Cloning the user's dotfiles repository...${NC}"
 arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/DotFiles.git /home/$USER_NAME/.dotfiles"
-
-# Create and enable udiskie service for automounting USB drives
-arch-chroot /mnt /bin/bash -c 'cat > /etc/systemd/system/udiskie.service <<EOF
-[Unit]
-Description=Automount USB drives with udiskie
-
-[Service]
-ExecStart=/usr/bin/udiskie -a
-
-[Install]
-WantedBy=default.target
-EOF'
-
-# Enable the udiskie service so it starts on boot
-arch-chroot /mnt systemctl enable udiskie.service
-
-
 
 
 # === Apply Dotfiles === #
