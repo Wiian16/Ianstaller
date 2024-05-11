@@ -86,24 +86,60 @@ list_devices() {
 }
 
 
-# === Cleanup Function === #
+# === Cleanup Functions === #
 
-cleanup() {
-    echo -e "${RED}Error detected, cleaning up...${NC}"
+finishing-cleanup() {
+    echo -e "${BRIGHT_BLUE}Syncing...${NC}"
+    sync # Flush filesystem buffers
+    sleep 5 # Give some time for the buffers to flush
+
     # Unmount partitions in reverse order of mounting
+    echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
     umount /mnt/boot/efi || true
+
     # Optionally deactivate swap if it was activated
+    echo -e "${BRIGHT_BLUE}Deactivating Swap...${NC}"
     swapoff /mnt/swapfile || true
+    sleep 2
+
     # Unbind /lib/modules if it was bound
+    echo -e "${BRIGHT_BLUE}Unmounting Modules...${NC}"
     umount /mnt/lib/modules || true
+    sleep 1
+
+    echo -e "${BRIGHT_BLUE}Killing Processes...${NC}"
     fuser -km /mnt || true
     sleep 2
+
+    echo -e "${BRIGHT_BLUE}Final Unmount...${NC}"
     umount -R /mnt || true
-    # Any other cleanup tasks can be added here
+}
+
+error-cleanup(){
+    echo -e "${RED}Error detected, cleaning up...${NC}"
+
+    sync # Flush filesystem buffers
+    sleep 5 # Give some time for the buffers to flush
+
+    # Unmount partitions in reverse order of mounting
+    umount /mnt/boot/efi || true
+
+    # Optionally deactivate swap if it was activated
+    swapoff /mnt/swapfile || true
+    sleep 2
+
+    # Unbind /lib/modules if it was bound
+    umount /mnt/lib/modules || true
+
+    fuser -km /mnt || true
+    sleep 2
+
+    umount -R /mnt || true
+
     echo -e "${RED}Cleanup complete. You may now attempt to rerun the script or perform manual fixes.${NC}"
 }
 
-trap cleanup ERR
+trap error-cleanup ERR
 
 
 
@@ -329,10 +365,9 @@ arch-chroot /mnt pacman -S --noconfirm networkmanager
 arch-chroot /mnt systemctl enable NetworkManager
 
 
-# Enable and start systemd-timesyncd for time synchronization
-echo -e "${BOLD_BRIGHT_BLUE}Enabling and starting systemd-timesyncd for time synchronization...${NC}"
+# Enable systemd-timesyncd for time synchronization
+echo -e "${BOLD_BRIGHT_BLUE}Enabling systemd-timesyncd for time synchronization...${NC}"
 arch-chroot /mnt systemctl enable systemd-timesyncd.service
-arch-chroot /mnt systemctl start systemd-timesyncd.service
 
 
 # Create the /mnt/lib/modules directory
@@ -686,15 +721,7 @@ arch-chroot /mnt su - "$USER_NAME" -c "sed -i 's/^ZSH_THEME=\".*\"/ZSH_THEME=\"a
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 
-# Clean up
-echo -e "${BOLD_BRIGHT_BLUE}Cleaning up...${NC}"
-arch-chroot /mnt pacman -Scc --noconfirm
-arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -Scc --noconfirm"
-echo -e "${GREEN}Desktop environment installation complete.${NC}"
 
-
-# Disable the error trap
-trap - ERR
 
 
 # === Finish Installation === #
@@ -704,9 +731,10 @@ echo -e "${BOLD_BRIGHT_BLUE}Finishing up the installation...${NC}"
 # Restore the original sudoers file
 arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
 
-fuser -km /mnt
-sleep 2
-umount /mnt/lib/modules || true
-umount -R /mnt || true
+# Clean up
+finishing-cleanup
+
+# Disable the error trap
+trap - ERR
 
 echo -e "${GREEN}Installation complete. Please reboot into the new system.${NC}"
