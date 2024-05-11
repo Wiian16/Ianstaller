@@ -572,21 +572,22 @@ PACKAGES=(
     # Fonts
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
 
-    # Other
+    # Desktop Depends
     rofi feh copyq mpc alsa-utils pulseaudio playerctl
-    discord neovim ranger htop
+    discord neovim ranger htop rofi-calc
     sed jq feh imagemagick libnotify
-    pastel
+    pastel file-roller tumbler xarchiver xcolor
 
+    # System Packages
     gnome-keyring libsecret
     qt5
     tree
-    tumbler
-    file-roller
-    xarchiver
-    xcolor
-    rofi-calc
     xapp
+    xdg-user-dirs
+    udiskie
+    man
+    gparted
+
 )
 
 AUR_PACKAGES=(
@@ -596,9 +597,11 @@ AUR_PACKAGES=(
     python-pywal
     papirus-nord
     nordic-darker-theme
-    i3lock-fancy-rapid
     code
     copyq
+    i3lock-color
+    i3lock-fancy-rapid-git
+    qt5-styleplugins
 )
 
 
@@ -617,6 +620,23 @@ arch-chroot /mnt systemctl enable sddm.service
 # Clone the user's dotfiles repository
 echo -e "${BOLD_BRIGHT_BLUE}Cloning the user's dotfiles repository...${NC}"
 arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/DotFiles.git /home/$USER_NAME/.dotfiles"
+
+# Create and enable udiskie service for automounting USB drives
+arch-chroot /mnt /bin/bash -c 'cat > /etc/systemd/system/udiskie.service <<EOF
+[Unit]
+Description=Automount USB drives with udiskie
+
+[Service]
+ExecStart=/usr/bin/udiskie -a
+
+[Install]
+WantedBy=default.target
+EOF'
+
+# Enable the udiskie service so it starts on boot
+arch-chroot /mnt systemctl enable udiskie.service
+
+
 
 
 # === Apply Dotfiles === #
@@ -652,10 +672,17 @@ arch-chroot /mnt cp "$DOTFILES_DIR/archcraft.zsh-theme" "$USER_HOME/.oh-my-zsh/c
 # Handle Theme
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
+arch-chroot /mnt cp "$DOTFILES_DIR/.theme" "$USER_HOME"
 
 arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
+
+# Add qt Theming
+arch-chroot /mnt /bin/bash -c "cat >> /etc/environment << 'EOF'
+QT_QPA_PLATFORMTHEME=gtk2
+QT_STYLE_OVERRIDE=gtk2
+EOF"
 
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
@@ -712,11 +739,12 @@ alias nv=\"nvim\"
 alias cls=\"clear\"
 EOF"
 
-
-
 # Change ZSH_THEME to "archcraft" in .zshrc
 arch-chroot /mnt su - "$USER_NAME" -c "sed -i 's/^ZSH_THEME=\".*\"/ZSH_THEME=\"archcraft\"/' \"$USER_HOME/.zshrc\""
 
+# Add Default Dirs
+arch-chroot /mnt su - "$USER_NAME" -c "xdg-user-dirs-update"
+arch-chroot /mnt rm -rf $USER_HOME/Public $USER_HOME/Templates $USER_HOME/.zcompdump-* $USER_HOME/.bashrc $USER_HOME/.bash_logout $USER_HOME/.bash_profile $USER_HOME/.dotfiles
 
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
