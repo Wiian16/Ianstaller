@@ -572,7 +572,7 @@ arch-chroot /mnt pacman -S --noconfirm "${PACKAGES[@]}"
 
 # Install all AUR packages in the array
 echo -e "${BOLD_BRIGHT_BLUE}Installing AUR packages...${NC}"
-arch-chroot /mnt su - "$USER_NAME" -c "/usr/bin/yay -S --noconfirm \"${AUR_PACKAGES[@]}\""
+arch-chroot /mnt su - "$USER_NAME" -c "yay -S --noconfirm ${AUR_PACKAGES[*]}"
 
 # Enable SDDM
 echo -e "${BOLD_BRIGHT_BLUE}Enabling SDDM...${NC}"
