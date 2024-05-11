@@ -673,11 +673,18 @@ arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
 arch-chroot /mnt cp "$DOTFILES_DIR/.theme" "$USER_HOME"
 
+# User GTK
 arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
 
-# Add qt Theming
+# Root GTK
+arch-chroot /mnt mkdir "/root/.config/gtk-3.0"
+arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "/root/.config/gtk-3.0"
+arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "/root"
+
+
+# QT Theming
 arch-chroot /mnt /bin/bash -c "cat >> /etc/environment << 'EOF'
 QT_QPA_PLATFORMTHEME=gtk2
 QT_STYLE_OVERRIDE=gtk2
