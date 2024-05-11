@@ -610,16 +610,16 @@ copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
 copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 
-arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
-arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
-arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
-
 # Custom zsh theme
 arch-chroot /mnt cp "$DOTFILES_DIR/archcraft.zsh-theme" "$USER_HOME/.oh-my-zsh/custom/themes/"
 
 # Handle Theme
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Folders" "/usr/share/icons"
+
+arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
+arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
+arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
 
 # Handle wallpapers
 arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
