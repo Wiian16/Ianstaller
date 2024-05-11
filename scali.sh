@@ -571,7 +571,7 @@ echo -e "${YELLOW}Temporarily making sudo passwordless${NC}"
 arch-chroot /mnt cp /etc/sudoers /etc/sudoers.bak
 
 # Add the user to the sudoers file with NOPASSWD
-echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/USER_NAME
+echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/$USER_NAME
 
 
 # Define an array of packages to install
@@ -767,8 +767,10 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 
 echo -e "${BOLD_BRIGHT_BLUE}Finishing up the installation...${NC}"
 
+echo -e "${YELLOW}Restoring sudoers...${NC}"
 # Restore the original sudoers file
 arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
+arch-chroot /mnt rm /etc/sudoers.d/$USER_NAME
 
 # Clean up
 finishing-cleanup
