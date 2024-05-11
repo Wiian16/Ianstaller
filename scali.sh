@@ -680,7 +680,7 @@ arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk
 arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
 
 # Root GTK
-arch-chroot /mnt mkdir "/root/.config/gtk-3.0"
+arch-chroot /mnt mkdir -p "/root/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "/root/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "/root"
 
