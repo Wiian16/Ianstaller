@@ -612,6 +612,10 @@ copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 
 arch-chroot /mnt mkdir "$USER_HOME/.config/gtk-3.0"
 arch-chroot /mnt cp "$DOTFILES_DIR/gtk-3.0/settings.ini" "$USER_HOME/.config/gtk-3.0"
+arch-chroot /mnt cp "$DOTFILES_DIR/.gtkrc-2.0" "$USER_HOME"
+
+# Custom zsh theme
+arch-chroot /mnt cp "$DOTFILES_DIR/archcraft.zsh-theme" "$USER_HOME/.oh-my-zsh/custom/themes/"
 
 # Handle Theme
 arch-chroot /mnt cp -r "$DOTFILES_DIR/Nordic-Cursors" "/usr/share/icons"
@@ -673,6 +677,9 @@ alias cls=\"clear\"
 EOF"
 
 
+
+# Change ZSH_THEME to "archcraft" in .zshrc
+arch-chroot /mnt su - "$USER_NAME" -c "sed -i 's/^ZSH_THEME=\".*\"/ZSH_THEME=\"archcraft\"/' \"$USER_HOME/.zshrc\""
 
 
 # Ensure the new user owns their home directory and contents
