@@ -569,8 +569,7 @@ EOF"
 arch-chroot /mnt chown -R $USER_NAME: /home/$USER_NAME/.config/systemd
 
 # Enable the udiskie service for the user so it starts on login
-arch-chroot /mnt su - "$USER_NAME" systemctl --user enable udiskie.service
-
+arch-chroot /mnt su - "$USER_NAME" -c "systemctl --user enable udiskie.service"
 
 
 
