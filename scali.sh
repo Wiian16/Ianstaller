@@ -351,7 +351,7 @@ echo "Setting up sudo..."
 arch-chroot /mnt pacman -S --noconfirm sudo
 # Uncomment to allow members of group wheel to execute any command
 #arch-chroot /mnt sed -i 's/^# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
-echo "%wheel ALL=(ALL:ALL) ALL" | arch-chroot /mnt tee -a /etc/sudoers > /dev/null
+#echo "%wheel ALL=(ALL:ALL) ALL" | arch-chroot /mnt tee -a /etc/sudoers > /dev/null
 
 # Set up a swap file
 if [ "$SWAP_SIZE" -gt 0 ]; then
@@ -781,6 +781,7 @@ echo -e "${YELLOW}Restoring sudoers...${NC}"
 # Restore the original sudoers file
 arch-chroot /mnt mv /etc/sudoers.bak /etc/sudoers
 arch-chroot /mnt rm /etc/sudoers.d/$USER_NAME
+echo "%wheel ALL=(ALL:ALL) ALL" | arch-chroot /mnt tee -a /etc/sudoers > /dev/null
 
 # Clean up
 finishing-cleanup
