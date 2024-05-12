@@ -330,6 +330,7 @@ arch-chroot /mnt sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/
 arch-chroot /mnt sed -i 's/^#Color/Color/' /etc/pacman.conf
 arch-chroot /mnt sed -i '/^#\[multilib\]/s/^#//' /etc/pacman.conf
 arch-chroot /mnt sed -i '/^\[multilib\]/{n;s/^#Include = /Include = /}' /etc/pacman.conf
+arch-chroot /mnt pacman -Sy
 echo -e "${GREEN}Enabled parallel downloads, multilib, and color in pacman.conf on the new system.${NC}"
 echo
 
