@@ -663,6 +663,9 @@ arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/D
 
 # === Apply Dotfiles === #
 
+# Ensure the new user owns their home directory and contents
+arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
+
 # Define the user's home directory
 USER_HOME="/home/$USER_NAME"
 
