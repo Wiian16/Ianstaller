@@ -542,20 +542,34 @@ arch-chroot /mnt systemctl enable bluetooth.service
 arch-chroot /mnt pacman -S --noconfirm pulseaudio-bluetooth blueman
 
 
-# Create and enable udiskie service for automounting USB drives
-arch-chroot /mnt /bin/bash -c 'cat > /etc/systemd/system/udiskie.service <<EOF
+
+# = Udiskie = #
+
+echo -e "${BOLD_BRIGHT_BLUE}Setting up udiskie...${NC}"
+
+arch-chroot /mnt pacman -S --needed --noconfirm udiskie
+
+# Create the user's systemd directory if it doesn't exist
+arch-chroot /mnt mkdir -p /home/$USER_NAME/.config/systemd/user
+
+# Create and enable udiskie service for automounting USB drives as a user service
+arch-chroot /mnt /bin/bash -c "cat > /home/$USER_NAME/.config/systemd/user/udiskie.service <<EOF
 [Unit]
 Description=Automount USB drives with udiskie
 
 [Service]
+Type=simple
 ExecStart=/usr/bin/udiskie -a
 
 [Install]
 WantedBy=default.target
-EOF'
+EOF"
 
-# Enable the udiskie service so it starts on boot
-arch-chroot /mnt systemctl enable udiskie.service
+# Ensure the correct permissions are set for the user's systemd directory and service file
+arch-chroot /mnt chown -R $USER_NAME: /home/$USER_NAME/.config/systemd
+
+# Enable the udiskie service for the user so it starts on login
+arch-chroot /mnt su - "$USER_NAME" systemctl --user enable udiskie.service
 
 
 
