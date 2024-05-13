@@ -611,7 +611,7 @@ PACKAGES=(
     neovim ranger htop rofi-calc
     sed jq feh imagemagick libnotify
     pastel file-roller tumbler xarchiver xcolor
-    xdotool maim xclip
+    xdotool maim xclip viewnior
 
     # System Packages
     gnome-keyring libsecret
