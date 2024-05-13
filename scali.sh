@@ -607,10 +607,11 @@ PACKAGES=(
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
 
     # Desktop Depends
-    rofi feh copyq mpc alsa-utils pulseaudio playerctl
+    rofi feh copyq mpc alsa-utils pulseaudio playerctl arandr
     neovim ranger htop rofi-calc
     sed jq feh imagemagick libnotify
     pastel file-roller tumbler xarchiver xcolor
+    xdotool maim xclip
 
     # System Packages
     gnome-keyring libsecret
