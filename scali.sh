@@ -622,6 +622,7 @@ PACKAGES=(
     udiskie
     man
     gparted
+    github-cli
 
     # Applications
     code
