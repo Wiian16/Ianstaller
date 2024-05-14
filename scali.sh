@@ -628,7 +628,7 @@ PACKAGES=(
     code
     gimp
     discord
-
+    obs-studio
 )
 
 AUR_PACKAGES=(
