@@ -137,7 +137,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 A significant portion of the configuration files used in this project are based on the work of the creator of Archcraft. Over the years, I have customized and built upon these configurations to create my own setup. You can find more about Archcraft and its creator here:
 
 - [Archcraft Website](https://archcraft.io/)
-- [Archcraft GitHub Repository](https://github.com/adi1090x)
+- [adi1090x's Github](https://github.com/adi1090x)
 
 ---
 
