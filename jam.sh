@@ -156,7 +156,7 @@ trap error-cleanup ERR
 clear
 
 # Display welcome message
-echo -e "${GREEN}Sam's Custom Arch Linux Installer${NC}"
+echo -e "${GREEN}SamsterJam's Custom Arch Linux Installer${NC}"
 echo -e "${BRIGHT_BLUE}-------------------------------------------------${NC}"
 
 # Ask for hostname with validation
