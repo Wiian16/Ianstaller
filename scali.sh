@@ -593,58 +593,68 @@ echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/
 
 # Define an array of packages to install
 PACKAGES=(
+    
     # Xorg
-    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd lxappearance
-    # Window manager and tools
-    bspwm sxhkd
-    # Display manager
-    sddm
-    # Terminal emulator, file manager, and utilities
-    thunar alacritty neofetch
-    # Polybar, picom, dunst, and conky
-    polybar picom dunst conky 
+    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd 
+
+    bspwm sxhkd        # Window manager and hotkeys
+    sddm               # Display manager
+    thunar             # GUI file manager
+    alacritty          # GPU terminal
+    polybar            # Info-bar at top
+    picom              # Compositor (blur, shadows, vsync, etc...)
+    dunst              # Notification display
+    conky              # Graphical desktop widget
+    lxappearance       # Change themes, icons, fonts, and cursors
+    
     # Fonts
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
 
     # Desktop Depends
-    rofi feh copyq mpc alsa-utils pulseaudio playerctl arandr
-    neovim ranger htop rofi-calc
-    sed jq feh imagemagick libnotify pastel 
-    file-roller tumbler xarchiver xcolor ffmpegthumbnailer gst-libav
-    xdotool maim xclip viewnior
+    rofi                               # Rofi menues
+    feh viewnior                       # View Images
+    copyq                              # Clipboard manager/history 
+    alsa-utils pulseaudio playerctl    # Audio
+    arandr                             # GUI display manager
+    neovim ranger htop neofetch        # Terminal Applications
+    rofi-calc                          # Calculator          
+    sed jq imagemagick pastel          # Dependencies for theme script
+    file-roller tumbler xarchiver      # Thunar extentions, archiver
+    ffmpegthumbnailer gst-libav        # More Thunar extentions
+    xcolor                             # Color Picker
+    xdotool maim xclip                 # Screen Shots
 
     # System Packages
-    gnome-keyring libsecret
-    qt5
-    tree
-    papirus-icon-theme xapp
-    xdg-user-dirs
-    udiskie
-    man
-    gparted
-    github-cli
-    gvfs
+    gnome-keyring libsecret   # Applications to store passwords/data
+    qt5                       # Required dependency
+    tree                      # Terminal tree view
+    papirus-icon-theme xapp   # Icons for rofi and applications
+    xdg-user-dirs             # Generate and assign home directories
+    udiskie                   # Auto mounnt USBs
+    man                       # For help instructions
+    gparted                   # For formating etc..
+    github-cli                # For Github to save your credentials
+    gvfs                      # For thunar's trash and OS volumes
 
     # Applications
-    vlc
-    code
-    gimp
-    discord
-    obs-studio
+    vlc         # Video playback
+    code        # Code and Text editor
+    gimp        # Image editor
+    discord     # ... discord
+    obs-studio  # Recording Videos
 )
 
 AUR_PACKAGES=(
-    ksuperkey 
-    xfce-polkit
-    python-pywal
-    nordic-darker-theme
-    copyq
-    i3lock-color
-    i3lock-fancy-rapid-git
-    qt5-styleplugins
+    ksuperkey               # Superkey launches rofi menu
+    xfce-polkit             # Agent for handling permissions
+    python-pywal            # Generate color schemes for theme script
+    nordic-darker-theme     # GTK theme      
+    i3lock-color            # Lock dependency takes in colors
+    i3lock-fancy-rapid-git  # Blur lock screen
+    qt5-styleplugins        # Copies GTK theme to qt
 
     # Applications
-    google-chrome 
+    google-chrome           # Web browser
 )
 
 
