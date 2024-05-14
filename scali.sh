@@ -609,8 +609,8 @@ PACKAGES=(
     # Desktop Depends
     rofi feh copyq mpc alsa-utils pulseaudio playerctl arandr
     neovim ranger htop rofi-calc
-    sed jq feh imagemagick libnotify
-    pastel file-roller tumbler xarchiver xcolor
+    sed jq feh imagemagick libnotify pastel 
+    file-roller tumbler xarchiver xcolor ffmpegthumbnailer gst-libav
     xdotool maim xclip viewnior
 
     # System Packages
@@ -625,6 +625,7 @@ PACKAGES=(
     github-cli
 
     # Applications
+    vlc
     code
     gimp
     discord
