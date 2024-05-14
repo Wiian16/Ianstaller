@@ -623,6 +623,7 @@ PACKAGES=(
     man
     gparted
     github-cli
+    gvfs
 
     # Applications
     vlc
