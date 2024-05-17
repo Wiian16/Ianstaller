@@ -306,7 +306,7 @@ mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
-pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr zsh curl wget git nano
+pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr os-prober zsh curl wget git nano
 
 
 # Configure the system
@@ -334,6 +334,11 @@ arch-chroot /mnt chsh -s /bin/zsh root
 # Install and configure the bootloader
 echo -e "${BOLD_BRIGHT_BLUE}Installing and configuring the bootloader...${NC}"
 arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi $REMOVABLE_FLAG
+
+# Enable os-prober in GRUB configuration
+echo -e "${BOLD_BRIGHT_BLUE}Enabling os-prober in GRUB configuration...${NC}"
+arch-chroot /mnt sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 # Verify UEFI boot entries
@@ -410,12 +415,13 @@ arch-chroot /mnt ufw default allow outgoing
 arch-chroot /mnt ufw enable
 # Enable UFW to start on boot
 arch-chroot /mnt systemctl enable ufw
-
-
 # Unbind /lib/modules after setting up UFW and before enabling any services
 umount /mnt/lib/modules
 
 
+# Update Reflectors
+arch-chroot /mnt pacman -S --noconfirm reflector
+arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
 
 
@@ -657,6 +663,7 @@ PACKAGES=(
     gparted                   # For formating etc..
     github-cli                # For Github to save your credentials
     gvfs                      # For thunar's trash and OS volumes
+    reflector                 # For Updating mirror list
 
     # Applications
     vlc         # Video playback
