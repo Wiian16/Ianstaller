@@ -207,6 +207,16 @@ while true; do
     validate_device "$DEVICE" && break
 done
 
+# Ask if the user is installing to a removable drive
+read -p "Are you installing to a removable drive? (y/N): " REMOVABLE
+if [[ $REMOVABLE =~ ^[yY]$ ]]; then
+    REMOVABLE_FLAG="--removable"
+    REMOVABLE_TEXT="Yes"
+else
+    REMOVABLE_FLAG=""
+    REMOVABLE_TEXT="No"
+fi
+
 # Ask for the swap size with validation
 while true; do
     read -p "Enter swap size in GiB (0 for no swap): " SWAP_SIZE
@@ -243,6 +253,7 @@ echo -e "${BRIGHT_BLUE}New user:${NC} $USER_NAME"
 echo -e "${BRIGHT_BLUE}User password:${NC} (hidden)"
 echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
 echo -e "${BRIGHT_BLUE}Root Partition:${NC} $ROOT_PARTITION"
+echo -e "${BRIGHT_BLUE}Removable Drive:${NC} $REMOVABLE_TEXT"
 if [ "$SWAP_SIZE" -gt 0 ]; then
     echo -e "${BRIGHT_BLUE}Swap File Size:${NC} ${SWAP_SIZE}GiB"
 else
@@ -254,6 +265,7 @@ if [[ $CONFIRM != [yY] ]]; then
     echo -e "${RED}Installation aborted by user.${NC}"
     exit 1
 fi
+
 
 
 
@@ -321,8 +333,18 @@ arch-chroot /mnt chsh -s /bin/zsh root
 
 # Install and configure the bootloader
 echo -e "${BOLD_BRIGHT_BLUE}Installing and configuring the bootloader...${NC}"
-arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable
+arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi $REMOVABLE_FLAG
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+# Verify UEFI boot entries
+echo -e "${BOLD_BRIGHT_BLUE}Verifying UEFI boot entries...${NC}"
+arch-chroot /mnt efibootmgr -v
+
+# If GRUB entry is missing, create it manually
+if ! arch-chroot /mnt efibootmgr -v | grep -q "GRUB"; then
+    echo -e "${BOLD_BRIGHT_BLUE}Creating UEFI boot entry for GRUB...${NC}"
+    arch-chroot /mnt efibootmgr --create --disk /dev/"$DEVICE" --part 1 --label "GRUB" --loader /EFI/GRUB/grubx64.efi
+fi
 
 # Modify pacman.conf on the new system
 echo -e "${BOLD_BRIGHT_BLUE}Modifying pacman.conf on the new system...${NC}"
