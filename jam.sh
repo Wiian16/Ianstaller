@@ -640,7 +640,7 @@ PACKAGES=(
     copyq                              # Clipboard manager/history 
     alsa-utils pulseaudio playerctl    # Audio
     arandr                             # GUI display manager
-    neovim ranger htop neofetch        # Terminal Applications
+    neovim ranger htop neofetch gdu    # Terminal Applications
     rofi-calc                          # Calculator          
     sed jq imagemagick pastel          # Dependencies for theme script
     file-roller tumbler xarchiver      # Thunar extentions, archiver
@@ -662,7 +662,8 @@ PACKAGES=(
     reflector                 # For Updating mirror list
 
     # Applications
-    vlc         # Video playback
+    mpv         # Minimal Video Player
+    vlc         # Multi-Video formater and playback
     code        # Code and Text editor
     gimp        # Image editor
     discord     # ... discord
