@@ -104,7 +104,7 @@ finishing-cleanup() {
 
     # Unbind /lib/modules if it was bound
     echo -e "${BRIGHT_BLUE}Unmounting Modules...${NC}"
-    umount /mnt/lib/modules || true
+    umount /mnt/lib/modules > /dev/null 2>&1 || true
     sleep 1
 
     echo -e "${BRIGHT_BLUE}Killing Processes...${NC}"
@@ -418,10 +418,6 @@ arch-chroot /mnt systemctl enable ufw
 # Unbind /lib/modules after setting up UFW and before enabling any services
 umount /mnt/lib/modules
 
-
-# Update Reflectors
-arch-chroot /mnt pacman -S --noconfirm reflector
-arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
 
 
@@ -827,7 +823,10 @@ arch-chroot /mnt rm /usr/share/applications/avahi-discover.desktop /usr/share/ap
 # Ensure the new user owns their home directory and contents
 arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 
-
+# Update Reflectors
+echo -e "${BOLD_BRIGHT_BLUE}Updating Reflectors...${NC}"
+arch-chroot /mnt pacman -S --noconfirm reflector
+arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
 
 
