@@ -790,7 +790,7 @@ fi
 
 # Add Grub Theme
 echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
-arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip"
+arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip" -d "$DOTFILES_DIR"
 arch-chroot /mnt cp -r "$DOTFILES_DIR/archmountains" "/boot/grub/themes/."
 arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/archmountains/theme.txt\" >> /etc/default/grub'
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
