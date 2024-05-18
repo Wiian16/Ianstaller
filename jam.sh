@@ -788,6 +788,15 @@ else
 fi
 
 
+# Add Grub Theme
+echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
+arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/archmountains" "/boot/grub/themes/."
+arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/archmountains/theme.txt\" >> /etc/default/grub'
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+
+
 # Add custom aliases and functions to .zshrc
 arch-chroot /mnt su - "$USER_NAME" -c "cat >> \"$USER_HOME/.zshrc\" << 'EOF'
 
@@ -825,17 +834,8 @@ arch-chroot /mnt chown -R "$USER_NAME":"$USER_NAME" /home/"$USER_NAME"
 
 # Update Reflectors
 echo -e "${BOLD_BRIGHT_BLUE}Updating Reflectors...${NC}"
-arch-chroot /mnt pacman -S --noconfirm reflector
+arch-chroot /mnt pacman -S --noconfirm --needed reflector
 arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
-
-# Add Grub Theme
-echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
-arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip"
-arch-chroot /mnt cp -r "$DOTFILES_DIR/archmountains" "/boot/grub/themes/."
-arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/archmountains/theme.txt\" >> /etc/default/grub'
-arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-
-
 
 
 
