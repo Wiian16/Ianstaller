@@ -19,6 +19,7 @@ JamInstaller is a custom Arch Linux installer script designed to automate the in
 
 - A bootable Arch Linux ISO USB
 - An internet connection
+- **UEFI firmware (this script does not support BIOS installations)**
 
 ## Usage
 

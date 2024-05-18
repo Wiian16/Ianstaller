@@ -828,6 +828,16 @@ echo -e "${BOLD_BRIGHT_BLUE}Updating Reflectors...${NC}"
 arch-chroot /mnt pacman -S --noconfirm reflector
 arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
+# Add Grub Theme
+echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
+arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip"
+arch-chroot /mnt cp -r "$DOTFILES_DIR/archmountains" "/boot/grub/themes/."
+arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/archmountains/theme.txt\" >> /etc/default/grub'
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+
+
+
+
 
 
 
