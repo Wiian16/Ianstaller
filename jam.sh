@@ -732,6 +732,10 @@ copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
 copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
 
+# Discord fix
+arch-chroot /mnt mkdir -p "$USER_HOME/.config/discord/"
+arch-chroot /mnt cp "$DOTFILES_DIR/discord-update-fix.json" "$USER_HOME/.config/discord/."
+
 # Custom zsh theme
 arch-chroot /mnt cp "$DOTFILES_DIR/archcraft.zsh-theme" "$USER_HOME/.oh-my-zsh/custom/themes/"
 
