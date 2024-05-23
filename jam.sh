@@ -653,6 +653,7 @@ PACKAGES=(
     qt5                       # Required dependency
     tree                      # Terminal tree view
     papirus-icon-theme xapp   # Icons for rofi and applications
+    noto-fonts-emoji          # Emojis
     xdg-user-dirs             # Generate and assign home directories
     udiskie                   # Auto mounnt USBs
     man                       # For help instructions
@@ -756,9 +757,8 @@ QT_QPA_PLATFORMTHEME=gtk2
 QT_STYLE_OVERRIDE=gtk2
 EOF"
 
-# Handle wallpapers
-arch-chroot /mnt su - "$USER_NAME" -c "mkdir -p \"$USER_HOME/Pictures/Wallpapers\""
-arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/wallpapers/\"* \"$USER_HOME/Pictures/Wallpapers/\""
+# Handle Pictures
+arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/Pictures\" \"$USER_HOME\""
 
 # Create .fehbg file and make it executable
 arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
