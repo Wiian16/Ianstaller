@@ -846,7 +846,10 @@ echo -e "${BOLD_BRIGHT_BLUE}Updating Reflectors...${NC}"
 arch-chroot /mnt pacman -S --noconfirm --needed reflector
 arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 
-
+# Remove GPU temp module from polybar if nvidia not found
+if [ "$nvidia_detected" = "no" ]; then
+  arch-chroot /mnt sh -c "sed -i '/^modules-left =/ s/gpu-temp//' \"$USER_HOME/.config/polybar/config.ini\""
+fi
 
 
 
