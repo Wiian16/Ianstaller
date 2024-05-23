@@ -776,16 +776,17 @@ arch-chroot /mnt mkdir -p "/etc/X11/xorg.conf.d"
 arch-chroot /mnt /bin/bash -c "cp -r \"$DOTFILES_DIR\"/X11/* /etc/X11/xorg.conf.d/"
 
 # Handle SDDM theme
-SDDM_THEME_NAME="vines"
+SDDM_THEME_NAME="sddm-blur-theme"
 arch-chroot /mnt mkdir -p "/usr/share/sddm/themes/${SDDM_THEME_NAME}"
-arch-chroot /mnt sh -c "cp -r '$DOTFILES_DIR/SDDM-Themes/$SDDM_THEME_NAME/'* '/usr/share/sddm/themes/${SDDM_THEME_NAME}/'"
-
+arch-chroot /mnt sh -c "cp -r '$DOTFILES_DIR/$SDDM_THEME_NAME/'* '/usr/share/sddm/themes/${SDDM_THEME_NAME}/'"
+arch-chroot /mnt sh -c "cp /usr/share/sddm/themes/$SDDM_THEME_NAME/Fonts/* /usr/share/fonts/"
 arch-chroot /mnt sh -c "cp /usr/lib/sddm/sddm.conf.d/default.conf /etc/sddm.conf"
 
 # Update SDDM configuration
 if ! arch-chroot /mnt grep -q "\[Theme\]" /etc/sddm.conf; then
     arch-chroot /mnt bash -c "echo -e '\n[Theme]' >> /etc/sddm.conf"
 fi
+
 if ! arch-chroot /mnt grep -q "^Current=" /etc/sddm.conf; then
     arch-chroot /mnt sed -i "/^\[Theme\]/aCurrent=$SDDM_THEME_NAME" /etc/sddm.conf
 else
