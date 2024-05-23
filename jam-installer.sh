@@ -669,6 +669,9 @@ PACKAGES=(
     gimp        # Image editor
     discord     # ... discord
     obs-studio  # Recording Videos
+
+    # For Sddm Theme
+    qt6-5compat qt6-declarative qt6-svg
 )
 
 AUR_PACKAGES=(
