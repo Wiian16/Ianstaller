@@ -665,7 +665,6 @@ PACKAGES=(
     # Applications
     mpv         # Minimal Video Player
     vlc         # Multi-Video formater and playback
-    code        # Code and Text editor
     gimp        # Image editor
     discord     # ... discord
     obs-studio  # Recording Videos
@@ -685,6 +684,7 @@ AUR_PACKAGES=(
 
     # Applications
     google-chrome           # Web browser
+    visual-studio-code-bin  # Code and Text editor
 )
 
 
