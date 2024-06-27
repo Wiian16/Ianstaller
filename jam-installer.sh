@@ -388,7 +388,7 @@ echo
 # Optimize makepkg.conf on the newly installed system
 echo -e "${BOLD_BRIGHT_BLUE}Optimizing makepkg.conf on the newly installed system...${NC}"
 arch-chroot /mnt sed -i "s/^#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$used_cores\"/" /etc/makepkg.conf
-arch-chroot /mnt sed -i "s/^#COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
+arch-chroot /mnt sed -i "s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
 
 
 # Optimize disk I/O for SSD on the newly installed system
