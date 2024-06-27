@@ -640,7 +640,7 @@ PACKAGES=(
     copyq                              # Clipboard manager/history 
     alsa-utils pulseaudio playerctl    # Audio
     arandr                             # GUI display manager
-    neovim ranger htop neofetch gdu    # Terminal Applications
+    neovim ranger htop fastfetch gdu   # Terminal Applications
     rofi-calc                          # Calculator          
     sed jq imagemagick pastel          # Dependencies for theme script
     file-roller tumbler xarchiver      # Thunar extentions, archiver
@@ -729,11 +729,14 @@ copy_dotfiles "$DOTFILES_DIR/alacritty" "$USER_HOME/.config/alacritty"
 copy_dotfiles "$DOTFILES_DIR/bspwm" "$USER_HOME/.config/bspwm"
 copy_dotfiles "$DOTFILES_DIR/conky" "$USER_HOME/.config/conky"
 copy_dotfiles "$DOTFILES_DIR/dunst" "$USER_HOME/.config/dunst"
-copy_dotfiles "$DOTFILES_DIR/neofetch" "$USER_HOME/.config/neofetch"
+copy_dotfiles "$DOTFILES_DIR/fastfetch" "$USER_HOME/.config/fastfetch"
 copy_dotfiles "$DOTFILES_DIR/picom" "$USER_HOME/.config/picom"
 copy_dotfiles "$DOTFILES_DIR/polybar" "$USER_HOME/.config/polybar"
 copy_dotfiles "$DOTFILES_DIR/sxhkd" "$USER_HOME/.config/sxhkd"
 copy_dotfiles "$DOTFILES_DIR/Thunar" "$USER_HOME/.config/Thunar"
+
+# Nanorc
+arch-chroot /mnt cp "$DOTFILES_DIR/.nanorc" "$USER_HOME/.nanorc"
 
 # Discord fix
 arch-chroot /mnt mkdir -p "$USER_HOME/.config/discord/"
@@ -822,7 +825,9 @@ if [[ \$- == *i* ]]; then
 fi
 
 alias la=\"ls -a\"
-alias nf=\"clear && neofetch\"
+alias neofetch=\"fastfetch\"
+alias nf=\"clear && fastfetch\"
+alias ff=\"fastfetch\"
 alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
 alias nv=\"nvim\"
 alias cls=\"clear\"
