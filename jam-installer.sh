@@ -92,50 +92,50 @@ finishing-cleanup() {
     echo -e "${BRIGHT_BLUE}Syncing...${NC}"
     sync # Flush filesystem buffers
     sleep 5 # Give some time for the buffers to flush
-
+    
     # Unmount partitions in reverse order of mounting
     echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
     umount /mnt/boot/efi || true
-
+    
     # Optionally deactivate swap if it was activated
     echo -e "${BRIGHT_BLUE}Deactivating Swap...${NC}"
     swapoff /mnt/swapfile || true
     sleep 2
-
+    
     # Unbind /lib/modules if it was bound
     echo -e "${BRIGHT_BLUE}Unmounting Modules...${NC}"
     umount /mnt/lib/modules > /dev/null 2>&1 || true
     sleep 1
-
+    
     echo -e "${BRIGHT_BLUE}Killing Processes...${NC}"
     fuser -km /mnt || true
     sleep 2
-
+    
     echo -e "${BRIGHT_BLUE}Final Unmount...${NC}"
     umount -R /mnt || true
 }
 
 error-cleanup(){
     echo -e "${RED}Error detected, cleaning up...${NC}"
-
+    
     sync # Flush filesystem buffers
     sleep 5 # Give some time for the buffers to flush
-
+    
     # Unmount partitions in reverse order of mounting
     umount /mnt/boot/efi || true
-
+    
     # Optionally deactivate swap if it was activated
     swapoff /mnt/swapfile || true
     sleep 2
-
+    
     # Unbind /lib/modules if it was bound
     umount /mnt/lib/modules || true
-
+    
     fuser -km /mnt || true
     sleep 2
-
+    
     umount -R /mnt || true
-
+    
     echo -e "${RED}Cleanup complete. You may now attempt to rerun the script or perform manual fixes.${NC}"
 }
 
@@ -219,8 +219,11 @@ fi
 
 # Ask for the swap size with validation
 while true; do
-    read -p "Enter swap size in GiB (0 for no swap): " SWAP_SIZE
-    if [[ "$SWAP_SIZE" =~ ^[0-9]+$ ]] && [ "$SWAP_SIZE" -ge 0 ]; then
+    read -p "Enter swap size in GiB (Default no swap): " SWAP_SIZE
+    if [[ -z "$SWAP_SIZE" ]]; then
+        SWAP_SIZE=0
+        break
+        elif [[ "$SWAP_SIZE" =~ ^[0-9]+$ ]] && [ "$SWAP_SIZE" -ge 0 ]; then
         available_space=$(get_available_disk_space "$DEVICE")
         if [ "$SWAP_SIZE" -le "$available_space" ]; then
             break
@@ -282,6 +285,26 @@ sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 sed -i 's/^#Color/Color/' /etc/pacman.conf
 echo -e "${BOLD_BRIGHT_BLUE}Enabled parallel downloads and color in pacman.conf on Arch ISO.${NC}"
 echo
+
+
+
+# Update make configuration
+
+# Calculate 50% of available CPU cores using shell arithmetic
+total_cores=$(nproc)
+used_cores=$(( (total_cores * 50 + 50) / 100 ))  # This rounds to the nearest integer
+
+# Ensure at least one core is used
+if [ "$used_cores" -lt 1 ]; then
+    used_cores=1
+fi
+
+# Optimize makepkg.conf
+echo -e "${BOLD_BRIGHT_BLUE}Optimizing makepkg.conf...${NC}"
+sed -i "s/^#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$used_cores\"/" /etc/makepkg.conf
+sed -i "s/^#COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
+
+
 
 # Partition the disk
 echo -e "${BOLD_BRIGHT_BLUE}Partitioning the disk...${NC}"
@@ -360,6 +383,20 @@ arch-chroot /mnt sed -i '/^\[multilib\]/{n;s/^#Include = /Include = /}' /etc/pac
 arch-chroot /mnt pacman -Sy
 echo -e "${GREEN}Enabled parallel downloads, multilib, and color in pacman.conf on the new system.${NC}"
 echo
+
+
+# Optimize makepkg.conf on the newly installed system
+echo -e "${BOLD_BRIGHT_BLUE}Optimizing makepkg.conf on the newly installed system...${NC}"
+arch-chroot /mnt sed -i "s/^#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$used_cores\"/" /etc/makepkg.conf
+arch-chroot /mnt sed -i "s/^#COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
+
+
+# Optimize disk I/O for SSD on the newly installed system
+echo -e "${BOLD_BRIGHT_BLUE}Optimizing disk I/O for SSD on the newly installed system...${NC}"
+arch-chroot /mnt bash -c 'echo "vm.swappiness=10" >> /etc/sysctl.d/99-sysctl.conf'
+
+
+
 
 
 
@@ -495,7 +532,7 @@ nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || ec
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
-
+    
     # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
     echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
     if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
@@ -504,7 +541,7 @@ if [ "$nvidia_detected" = "yes" ]; then
         echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
     fi
     arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-
+    
     # Add NVIDIA modules to mkinitcpio.conf
     echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
     if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
@@ -513,13 +550,13 @@ if [ "$nvidia_detected" = "yes" ]; then
         echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
     fi
     arch-chroot /mnt mkinitcpio -P
-
-# Install Intel drivers only if Intel is detected and NVIDIA is not
-elif [ "$intel_detected" = "yes" ]; then
+    
+    # Install Intel drivers only if Intel is detected and NVIDIA is not
+    elif [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
-# Install AMD drivers if AMD graphics are detected
-elif [ "$amd_detected" = "yes" ]; then
+    # Install AMD drivers if AMD graphics are detected
+    elif [ "$amd_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
 fi
@@ -619,8 +656,8 @@ echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/
 PACKAGES=(
     
     # Xorg
-    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd 
-
+    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd
+    
     bspwm sxhkd        # Window manager and hotkeys
     sddm               # Display manager
     thunar             # GUI file manager
@@ -633,21 +670,21 @@ PACKAGES=(
     
     # Fonts
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
-
+    
     # Desktop Depends
     rofi                               # Rofi menues
     feh viewnior                       # View Images
-    copyq                              # Clipboard manager/history 
+    copyq                              # Clipboard manager/history
     alsa-utils pulseaudio playerctl    # Audio
     arandr                             # GUI display manager
     neovim ranger htop fastfetch gdu   # Terminal Applications
-    rofi-calc                          # Calculator          
+    rofi-calc                          # Calculator
     sed jq imagemagick pastel          # Dependencies for theme script
     file-roller tumbler xarchiver      # Thunar extentions, archiver
     ffmpegthumbnailer gst-libav        # More Thunar extentions
     xcolor                             # Color Picker
     xdotool maim xclip                 # Screen Shots
-
+    
     # System Packages
     gnome-keyring libsecret   # Applications to store passwords/data
     qt5                       # Required dependency
@@ -661,14 +698,14 @@ PACKAGES=(
     github-cli                # For Github to save your credentials
     gvfs                      # For thunar's trash and OS volumes
     reflector                 # For Updating mirror list
-
+    
     # Applications
     mpv         # Minimal Video Player
     vlc         # Multi-Video formater and playback
     gimp        # Image editor
     discord     # ... discord
     obs-studio  # Recording Videos
-
+    
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
 )
@@ -677,11 +714,11 @@ AUR_PACKAGES=(
     ksuperkey               # Superkey launches rofi menu
     xfce-polkit             # Agent for handling permissions
     python-pywal            # Generate color schemes for theme script
-    nordic-darker-theme     # GTK theme      
+    nordic-darker-theme     # GTK theme
     i3lock-color            # Lock dependency takes in colors
     i3lock-fancy-rapid-git  # Blur lock screen
     qt5-styleplugins        # Copies GTK theme to qt
-
+    
     # Applications
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
@@ -853,7 +890,7 @@ arch-chroot /mnt reflector --verbose --latest 10 --sort rate --save /etc/pacman.
 
 # Remove GPU temp module from polybar if nvidia not found
 if [ "$nvidia_detected" = "no" ]; then
-  arch-chroot /mnt sh -c "sed -i '/^modules-left =/ s/gpu-temp//' \"$USER_HOME/.config/polybar/config.ini\""
+    arch-chroot /mnt sh -c "sed -i '/^modules-left =/ s/gpu-temp//' \"$USER_HOME/.config/polybar/config.ini\""
 fi
 
 
