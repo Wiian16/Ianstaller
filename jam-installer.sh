@@ -6,7 +6,7 @@ set -o pipefail
 # === Setup === #
 
 # Set up logging
-exec > >(tee scali.log)
+exec > >(tee jam-installer.log)
 exec 2>&1
 
 # Define colors for output
