@@ -669,7 +669,7 @@ PACKAGES=(
     lxappearance       # Change themes, icons, fonts, and cursors
     
     # Fonts
-    ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono
+    ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk
     
     # Desktop Depends
     rofi                               # Rofi menues
@@ -684,6 +684,8 @@ PACKAGES=(
     ffmpegthumbnailer gst-libav        # More Thunar extentions
     xcolor                             # Color Picker
     xdotool maim xclip                 # Screen Shots
+    pulsemixer                         # Audio control
+    bc                                 # Command line calculations
     
     # System Packages
     gnome-keyring libsecret   # Applications to store passwords/data
@@ -698,6 +700,7 @@ PACKAGES=(
     github-cli                # For Github to save your credentials
     gvfs                      # For thunar's trash and OS volumes
     reflector                 # For Updating mirror list
+    man-pages                 # For help instructions
     
     # Applications
     mpv         # Minimal Video Player
@@ -722,6 +725,7 @@ AUR_PACKAGES=(
     # Applications
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
+    backlight_control       # Control backlight
 )
 
 
