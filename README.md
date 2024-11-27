@@ -28,7 +28,7 @@ JamInstaller is a custom Arch Linux installer script designed to automate the in
 
 2. **Download the JamInstaller script:**
    ```sh
-   curl -O -L samsterjam.com/jam-installer.sh
+   curl -O -L https://raw.githubusercontent.com/SamsterJam/JamInstaller/main/jam-installer.sh
    ```
 
 3. **Make the script executable:**
