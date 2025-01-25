@@ -725,7 +725,7 @@ AUR_PACKAGES=(
     # Applications
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
-    backlight_control       # Control backlight
+    #backlight_control       # Control backlight
 )
 
 
@@ -842,11 +842,11 @@ fi
 
 
 # Add Grub Theme
-echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
-arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip" -d "$DOTFILES_DIR"
-arch-chroot /mnt cp -r "$DOTFILES_DIR/floralboot" "/boot/grub/themes/."
-arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/floralboot/theme.txt\" >> /etc/default/grub'
-arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+#echo -e "${BOLD_BRIGHT_BLUE}Installing Grub Theme...${NC}"
+#arch-chroot /mnt unzip "$DOTFILES_DIR/grubtheme.zip" -d "$DOTFILES_DIR"
+#arch-chroot /mnt cp -r "$DOTFILES_DIR/floralboot" "/boot/grub/themes/."
+#arch-chroot /mnt bash -c 'echo GRUB_THEME=\"/boot/grub/themes/floralboot/theme.txt\" >> /etc/default/grub'
+#arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 
 
