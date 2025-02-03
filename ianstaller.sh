@@ -554,7 +554,10 @@ if [ "$nvidia_detected" = "yes" ]; then
     # Install Intel drivers only if Intel is detected and NVIDIA is not
     elif [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
-    #arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+    read -p "Install Intel video drivers? (Only affects Intel machines) (Y/n): " CONFIRM
+    if [[ $CONFIRM != [nN] ]]; then
+        arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+    fi
     # Install AMD drivers if AMD graphics are detected
     elif [ "$amd_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
