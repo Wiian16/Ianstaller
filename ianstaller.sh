@@ -754,7 +754,7 @@ arch-chroot /mnt systemctl enable sddm.service
 
 # Clone the user's dotfiles repository
 echo -e "${BOLD_BRIGHT_BLUE}Cloning the user's dotfiles repository...${NC}"
-arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/SamsterJam/DotFiles.git /home/$USER_NAME/.dotfiles"
+arch-chroot /mnt su - "$USER_NAME" -c "git clone https://github.com/Wiian16/DotFiles.git /home/$USER_NAME/.dotfiles"
 
 
 # === Apply Dotfiles === #
