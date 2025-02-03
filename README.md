@@ -1,6 +1,6 @@
 # Ianstaller
 
-Ianstaller is a custom Arch Linux installer script based on (JamInstaller)[github.com/samsterjam/JamInstaller]
+Ianstaller is a custom Arch Linux installer script based on [JamInstaller](github.com/samsterjam/JamInstaller)
 designed to automate the installation and configuration of a
 polished Arch Linux system. This script takes minimal input from the user and sets up a complete system with essential 
 packages, configurations, and a beautiful desktop environment (with my own custom theme script)!
