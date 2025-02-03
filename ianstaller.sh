@@ -718,6 +718,7 @@ PACKAGES=(
     atril       # PDF Viewer
     bitwarden   # Password Manager
     vlc         # Video Player
+    github-cli  # Github Credential Manager
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
