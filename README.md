@@ -1,6 +1,9 @@
-# JamInstaller
+# Ianstaller
 
-JamInstaller is a custom Arch Linux installer script designed to automate the installation and configuration of a polished Arch Linux system. This script takes minimal input from the user and sets up a complete system with essential packages, configurations, and a beautiful desktop environment (with my own custom theme script)!
+Ianstaller is a custom Arch Linux installer script based on (JamInstaller)[github.com/samsterjam/JamInstaller]
+designed to automate the installation and configuration of a
+polished Arch Linux system. This script takes minimal input from the user and sets up a complete system with essential 
+packages, configurations, and a beautiful desktop environment (with my own custom theme script)!
 
 ## Features
 
@@ -28,17 +31,17 @@ JamInstaller is a custom Arch Linux installer script designed to automate the in
 
 2. **Download the JamInstaller script:**
    ```sh
-   curl -O -L https://raw.githubusercontent.com/SamsterJam/JamInstaller/main/jam-installer.sh
+   curl -O -L https://raw.githubusercontent.com/Wiian16/Ianstaller/main/ianstaller.sh
    ```
 
 3. **Make the script executable:**
    ```sh
-   chmod +x jam-installer.sh
+   chmod +x ianstaller.sh
    ```
 
 4. **Run the script:**
    ```sh
-   ./jam-installer.sh
+   ./ianstaller.sh
    ```
 
 5. **Follow the on-screen prompts:**
@@ -97,36 +100,51 @@ The script will perform the following steps:
 
 ## Post-Installation
 
-After the script completes, reboot your system into the new Arch Linux installation. You should have a fully configured and polished Arch Linux system ready to use.
+After the script completes, reboot your system into the new Arch Linux installation. You should have a fully configured
+and polished Arch Linux system ready to use.
 
 ## Disclaimer
 
-JamInstaller is a custom Arch Linux installer script created by a single developer primarily for personal use and to share with friends who want to try Arch Linux. This script is not intended to be a distributed operating system and comes with several limitations and caveats:
+Ianstaller is a custom Arch Linux installer script created by a single developer primarily for personal use and to 
+share with friends who want to try Arch Linux. This script is not intended to be a distributed operating system and 
+comes with several limitations and caveats:
 
 1. **Limited Testing and Support:**
-   - This script has only been tested on the developer's personal computers, which have Intel CPUs and Nvidia graphics cards.
-   - It has also been tested in virtual machines, where some configurations had to be adjusted (e.g., using xrender instead of glx in picom).
-   - The script includes specific configurations for Nvidia graphics cards, but lacks similar support for other hardware.
+   - This script has only been tested on the developer's personal computers, which have Intel CPUs and Nvidia graphics 
+   cards.
+   - It has also been tested in virtual machines, where some configurations had to be adjusted (e.g., using xrender 
+   instead of glx in picom).
+   - The script includes specific configurations for Nvidia graphics cards, but lacks similar support for other 
+   hardware.
 
 2. **Hardware Compatibility:**
-   - The script may not work perfectly on all systems out of the box. For example, the polybar configuration assumes the presence of certain hardware sensors and Nvidia-specific modules.
+   - The script may not work perfectly on all systems out of the box. For example, the polybar configuration assumes 
+   the presence of certain hardware sensors and Nvidia-specific modules.
    - Users with different hardware may need to manually adjust configurations to achieve optimal performance.
 
 3. **Configuration Specificity:**
-   - The script includes many configurations tailored to the developer's personal setup. These configurations may not be suitable for all users.
-   - Conditional configurations and broader compatibility have not been a focus of this project. Users may need to have some knowledge of Arch Linux and its configuration to make necessary adjustments.
+   - The script includes many configurations tailored to the developer's personal setup. These configurations may not 
+   be suitable for all users.
+   - Conditional configurations and broader compatibility have not been a focus of this project. Users may need to 
+   have some knowledge of Arch Linux and its configuration to make necessary adjustments.
 
 4. **No Warranty:**
-   - This script is provided as-is without any warranty. The developer is not responsible for any issues that may arise from using this script.
+   - This script is provided as-is without any warranty. The developer is not responsible for any issues that may 
+   arise from using this script.
    - Users are advised to back up their data before running the script and to use it at their own risk.
 
 5. **Not a General-Purpose Installer:**
-   - If you are looking for a more robust and general-purpose Arch Linux installer, consider using [Archcraft](https://archcraft.io/), which is designed to work for newcomers with different systems and provides a more polished out-of-the-box experience.
+   - If you are looking for a more robust and general-purpose Arch Linux installer, consider using 
+   [Archcraft](https://archcraft.io/), which is designed to work for newcomers with different systems and provides a 
+   more polished out-of-the-box experience.
 
 6. **Community and Contributions:**
-   - While contributions and suggestions are welcome, users should be aware that this project is maintained by a single developer and may not receive frequent updates or extensive support.
+   - While contributions and suggestions are welcome, users should be aware that this project is maintained by a 
+   single developer and may not receive frequent updates or extensive support.
 
-By using JamInstaller, you acknowledge that you understand these limitations and agree to use the script at your own risk. The primary goal of this project is to share a specific Arch Linux setup with friends and to provide a starting point for those who are comfortable making their own adjustments.
+By using Ianstaller, you acknowledge that you understand these limitations and agree to use the script at your own 
+risk. The primary goal of this project is to share a specific Arch Linux setup with friends and to provide a starting 
+point for those who are comfortable making their own adjustments.
 
 
 ## License
@@ -135,11 +153,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-A significant portion of the configuration files used in this project are based on the work of the creator of Archcraft. Over the years, I have customized and built upon these configurations to create my own setup. You can find more about Archcraft and its creator here:
+A significant portion of the configuration files used in this project are based on the work of the creator of 
+Archcraft. Over the years, I have customized and built upon these configurations to create my own setup. You can find 
+more about Archcraft and its creator here:
 
 - [Archcraft Website](https://archcraft.io/)
 - [adi1090x's Github](https://github.com/adi1090x)
 
 ---
 
-**Note:** This script is provided as-is without any warranty. Use it at your own risk. Always back up your data before running any installation script.
+**Note:** This script is provided as-is without any warranty. Use it at your own risk. Always back up your data before 
+running any installation script.

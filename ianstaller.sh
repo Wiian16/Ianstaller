@@ -6,7 +6,7 @@ set -o pipefail
 # === Setup === #
 
 # Set up logging
-exec > >(tee jam-installer.log)
+exec > >(tee ianstaller.log)
 exec 2>&1
 
 # Define colors for output
@@ -156,7 +156,7 @@ trap error-cleanup ERR
 clear
 
 # Display welcome message
-echo -e "${GREEN}SamsterJam's Custom Arch Linux Installer${NC}"
+echo -e "${GREEN}Wiian16's Custom Arch Linux Installer${NC}"
 echo -e "${BRIGHT_BLUE}-------------------------------------------------${NC}"
 
 # Ask for hostname with validation
@@ -554,7 +554,7 @@ if [ "$nvidia_detected" = "yes" ]; then
     # Install Intel drivers only if Intel is detected and NVIDIA is not
     elif [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
+    #arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
     # Install AMD drivers if AMD graphics are detected
     elif [ "$amd_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
@@ -708,7 +708,17 @@ PACKAGES=(
     gimp        # Image editor
     discord     # ... discord
     obs-studio  # Recording Videos
-    
+    btop        # Monitoring System Resources
+    zoxide      # cd Autocompletion
+    sl          # ...
+    obsidian	# Note Taking
+    firefox     # Web Browsing
+    inkscape	# Vector Image Editor
+    libreoffice-fresh  # Rich Text Editor Suite
+    atril       # PDF Viewer
+    bitwarden   # Password Manager
+    vlc         # Video Player
+
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
 )
@@ -725,6 +735,7 @@ AUR_PACKAGES=(
     # Applications
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
+    zoom                    # Meeting Software
     #backlight_control       # Control backlight
 )
 
