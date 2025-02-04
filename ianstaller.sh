@@ -668,7 +668,6 @@ PACKAGES=(
     polybar            # Info-bar at top
     picom              # Compositor (blur, shadows, vsync, etc...)
     dunst              # Notification display
-    conky              # Graphical desktop widget
     lxappearance       # Change themes, icons, fonts, and cursors
     
     # Fonts
@@ -783,7 +782,6 @@ copy_dotfiles() {
 # Copy the main configuration files
 copy_dotfiles "$DOTFILES_DIR/alacritty" "$USER_HOME/.config/alacritty"
 copy_dotfiles "$DOTFILES_DIR/bspwm" "$USER_HOME/.config/bspwm"
-copy_dotfiles "$DOTFILES_DIR/conky" "$USER_HOME/.config/conky"
 copy_dotfiles "$DOTFILES_DIR/dunst" "$USER_HOME/.config/dunst"
 copy_dotfiles "$DOTFILES_DIR/fastfetch" "$USER_HOME/.config/fastfetch"
 copy_dotfiles "$DOTFILES_DIR/picom" "$USER_HOME/.config/picom"
