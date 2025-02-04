@@ -866,18 +866,6 @@ fi
 # Add custom aliases and functions to .zshrc
 arch-chroot /mnt su - "$USER_NAME" -c "cat >> \"$USER_HOME/.zshrc\" << 'EOF'
 
-function cdls() {
-  if builtin cd \"\$@\"; then
-    ls
-  else
-    return \$?  # Return the exit status of the cd command
-  fi
-}
-
-if [[ \$- == *i* ]]; then
-  alias cd='cdls'
-fi
-
 alias la=\"ls -a\"
 alias neofetch=\"fastfetch\"
 alias nf=\"clear && fastfetch\"
@@ -885,6 +873,22 @@ alias ff=\"fastfetch\"
 alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
 alias nv=\"nvim\"
 alias cls=\"clear\"
+
+# setup zoxide for cd
+zoxide init --cmd cd
+
+# Neovim switcher
+function nvims() {
+  items=(\"default\")
+  config=\$(printf \"%s\n\" \"\${items[@]}\" | fzf --prompt=\" Neovim Config  \" --height=~50% --layout=reverse --border --exit-0)
+  if [[ -z \$config ]]; then
+    echo \"Nothing selected\"
+    return 0
+  elif [[ \$config == \"default\" ]]; then
+    config=\"\"
+  fi
+  NVIM_APPNAME=\$config nvim \$@
+}
 EOF"
 
 # Change ZSH_THEME to "archcraft" in .zshrc
