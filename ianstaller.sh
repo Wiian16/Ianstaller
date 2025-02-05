@@ -874,9 +874,6 @@ alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
 alias nv=\"nvim\"
 alias cls=\"clear\"
 
-# setup zoxide for cd
-zoxide init --cmd cd
-
 # Neovim switcher
 function nvims() {
   items=(\"default\")
@@ -889,6 +886,9 @@ function nvims() {
   fi
   NVIM_APPNAME=\$config nvim \$@
 }
+
+# Setup zoxide for cd
+eval \"\$(zoxide init zsh --cmd cd)\"
 EOF"
 
 # Change ZSH_THEME to "archcraft" in .zshrc
