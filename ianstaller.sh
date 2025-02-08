@@ -721,6 +721,7 @@ PACKAGES=(
     bitwarden   # Password Manager
     vlc         # Video Player
     github-cli  # Github Credential Manager
+    samba       # Samba client for network shares
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
@@ -739,7 +740,7 @@ AUR_PACKAGES=(
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
     zoom                    # Meeting Software
-    #backlight_control       # Control backlight
+    backlight_control       # Control backlight
 )
 
 
