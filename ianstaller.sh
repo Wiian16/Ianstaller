@@ -740,7 +740,7 @@ AUR_PACKAGES=(
     google-chrome           # Web browser
     visual-studio-code-bin  # Code and Text editor
     zoom                    # Meeting Software
-    backlight_control       # Control backlight
+    #backlight_control       # Control backlight
 )
 
 
