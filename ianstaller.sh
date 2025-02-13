@@ -722,6 +722,7 @@ PACKAGES=(
     vlc         # Video Player
     github-cli  # Github Credential Manager
     samba       # Samba client for network shares
+    fzf         # Fuzzy searcher
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
