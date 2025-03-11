@@ -85,6 +85,11 @@ list_devices() {
     lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE,MODEL -d | awk 'NR>1 {print}'
 }
 
+list_partitions() {
+    echo -e "${YELLOW}Available devices:${NC}"
+    lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE,MODEL -x NAME | grep -v disk
+}
+
 
 # === Cleanup Functions === #
 
