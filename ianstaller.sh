@@ -723,6 +723,7 @@ PACKAGES=(
     github-cli  # Github Credential Manager
     samba       # Samba client for network shares
     fzf         # Fuzzy searcher
+    npm         # Node.js 
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
@@ -742,6 +743,7 @@ AUR_PACKAGES=(
     visual-studio-code-bin  # Code and Text editor
     zoom                    # Meeting Software
     #backlight_control       # Control backlight
+    nvim-lazy               # Neovim lazy package manager
 )
 
 
