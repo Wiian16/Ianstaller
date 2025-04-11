@@ -86,6 +86,7 @@ The script will perform the following steps:
    - Installs CPU microcode.
    - Installs audio packages and Bluetooth support.
    - Sets up udiskie for automounting USB drives.
+        - Currently disabled, see [current workarounds](#current-workarounds) for details
 
 6. **Level 4 Installation:**
    - Temporarily makes sudo passwordless for the new user.
@@ -102,6 +103,46 @@ The script will perform the following steps:
 
 After the script completes, reboot your system into the new Arch Linux installation. You should have a fully configured
 and polished Arch Linux system ready to use.
+
+## Current workarounds 
+
+### udiskie
+
+As of April 11, 2025, installing udiskie with arch-chroot does not work. Due to this, it has been disables in the 
+installation process. If you wish to install it manually, follow these steps:
+
+1. Ensure udiskie is installed and updated 
+
+    ```sh
+    sudo pacman -S udiskie
+    ```
+
+2. Create a file at `~/.config/systemd/user/udiskie.service` with the following content:
+
+    ```sh 
+    [Unit]
+    Description=Automount USB drives with udiskie
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/bin/udiskie -a
+
+    [Install]
+    WantedBy=default.target
+    ```
+
+3. Enable the service
+
+    ```sh 
+    systemctl --user enable udiskie.service 
+    ```
+
+4. Start the service
+
+    ```sh 
+    systemctl --user start udiskie.service
+    ```
+
 
 ## Disclaimer
 
