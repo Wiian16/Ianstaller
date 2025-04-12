@@ -71,6 +71,20 @@ validate_hostname() {
     fi
 }
 
+# Function to validat partition
+validate_partition() {
+    local device="$1"
+    if [ -b "$device" ]; then
+        # Check if it looks like a partition (e.g., ends in a digit or 'p' followed by a digit)
+        if [[ "$device" =~ [0-9]$ || "$device" =~ p[0-9]+$ ]]; then
+            return 0
+        fi
+    fi
+    echo -e "${RED}Invalid partition. Please enter a valid partition (e.g., sda1, nvme0n1p1).${NC}"
+    return 1
+}
+
+
 # Function to get the available disk space in GiB
 get_available_disk_space() {
     local device=$1
@@ -258,10 +272,10 @@ if [[ "$INSTALL_TYPE" == "drive" ]]; then
     fi
 else
     # Partition installation (assumes bootloader is already set up)
-    list_devices
+    list_partitions
     echo
     while true; do
-        read -p "Enter the partition to install on (e.g., sda2 or /dev/sda2): " PARTITION
+        read -p "Enter the partition to install on (e.g., /dev/sda2): " PARTITION
         # Use a validate_partition function or similar logic; here we assume validate_device works for partitions too.
         validate_partition "$PARTITION" && break
     done
