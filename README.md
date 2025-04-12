@@ -108,7 +108,7 @@ and polished Arch Linux system ready to use.
 
 ### udiskie
 
-As of April 11, 2025, installing udiskie with arch-chroot does not work. Due to this, it has been disables in the 
+As of April 11, 2025, installing udiskie with arch-chroot does not work. Due to this, it has been disabled in the 
 installation process. If you wish to install it manually, follow these steps:
 
 1. Ensure udiskie is installed and updated 
