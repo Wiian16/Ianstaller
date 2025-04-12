@@ -275,7 +275,7 @@ else
     list_partitions
     echo
     while true; do
-        read -p "Enter the partition to install on (e.g., /dev/sda2): " PARTITION
+        read -p "Enter the partition to install on (e.g., /dev/sda2, /dev/nvme0n1p1): " PARTITION
         # Use a validate_partition function or similar logic; here we assume validate_device works for partitions too.
         validate_partition "$PARTITION" && break
     done
