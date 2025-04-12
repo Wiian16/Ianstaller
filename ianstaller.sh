@@ -877,12 +877,13 @@ alias neofetch=\"fastfetch\"
 alias nf=\"clear && fastfetch\"
 alias ff=\"fastfetch\"
 alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
-alias nv=\"nvim\"
+alias nvim-lazy=\"NVIM_APPNAME=Lazy nvim\"
+alias nv=\"nvim-lazy\"
 alias cls=\"clear\"
 
 # Neovim switcher
 function nvims() {
-  items=(\"default\")
+  items=(\"default\" \"Lazy\")
   config=\$(printf \"%s\n\" \"\${items[@]}\" | fzf --prompt=\" Neovim Config  \" --height=~50% --layout=reverse --border --exit-0)
   if [[ -z \$config ]]; then
     echo \"Nothing selected\"
