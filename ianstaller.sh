@@ -674,20 +674,20 @@ PACKAGES=(
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk
     
     # Desktop Depends
-    rofi                               # Rofi menues
-    feh viewnior                       # View Images
-    copyq                              # Clipboard manager/history
-    alsa-utils pulseaudio playerctl    # Audio
-    arandr                             # GUI display manager
-    neovim ranger htop fastfetch gdu   # Terminal Applications
-    rofi-calc                          # Calculator
-    sed jq imagemagick pastel          # Dependencies for theme script
-    file-roller tumbler xarchiver      # Thunar extentions, archiver
-    ffmpegthumbnailer gst-libav        # More Thunar extentions
-    xcolor                             # Color Picker
-    xdotool maim xclip                 # Screen Shots
-    pulsemixer                         # Audio control
-    bc                                 # Command line calculations
+    rofi                                      # Rofi menues
+    feh viewnior                              # View Images
+    copyq                                     # Clipboard manager/history
+    alsa-utils pulseaudio playerctl           # Audio
+    arandr                                    # GUI display manager
+    vi vim neovim ranger htop fastfetch gdu   # Terminal Applications
+    rofi-calc                                 # Calculator
+    sed jq imagemagick pastel                 # Dependencies for theme script
+    file-roller tumbler xarchiver             # Thunar extentions, archiver
+    ffmpegthumbnailer gst-libav               # More Thunar extentions
+    xcolor                                    # Color Picker
+    xdotool maim xclip                        # Screen Shots
+    pulsemixer                                # Audio control
+    bc                                        # Command line calculations
     
     # System Packages
     gnome-keyring libsecret   # Applications to store passwords/data
@@ -724,6 +724,7 @@ PACKAGES=(
     samba       # Samba client for network shares
     fzf         # Fuzzy searcher
     npm         # Node.js 
+    unzip       # Unpack zip archives
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
