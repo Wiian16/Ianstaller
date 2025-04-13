@@ -286,6 +286,15 @@ else
     ROOT_PARTITION="$PARTITION"
     echo -e "${BRIGHT_BLUE}Selected root partition: ${NC}$ROOT_PARTITION"
 
+    # Ask for existing EFI partition
+    echo 
+    while true; do
+        read -p "Enter the existing EFI partition (e.g., /dev/sda2, /dev/nvme0n1p1): " PARTITION
+        validate_partition "$PARTITION" && break
+    done
+    EFI_PARTITION="$PARTITION"
+    echo -e "${BRIGHT_BLUE}Selected EFI partition: ${NC}$EFI_PARTITION"
+
     # Ask for swap size (skip available space check since drive space may not be known)
     while true; do
         read -p "Enter swap size in GiB (Default no swap): " SWAP_SIZE
@@ -574,17 +583,15 @@ nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || ec
 # Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm nvidia-lts nvidia-utils nvidia-settings
+    arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
 
-    if [[ $INSTALL_TYPE = "drive" ]]; then
-        echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
-        if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
-            arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
-        else
-            echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
-        fi
-        arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+    echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
+    if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
+        arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
+    else
+        echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
     fi
+    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
     echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
     if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
