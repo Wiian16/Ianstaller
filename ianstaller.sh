@@ -574,10 +574,9 @@ nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || ec
 # Install NVIDIA drivers if NVIDIA graphics are detected (regardless of Intel)
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
-    arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
-    
+    arch-chroot /mnt pacman -S --noconfirm nvidia-lts nvidia-utils nvidia-settings
+
     if [[ $INSTALL_TYPE = "drive" ]]; then
-        # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
         echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
         if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
             arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
@@ -586,29 +585,31 @@ if [ "$nvidia_detected" = "yes" ]; then
         fi
         arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
     fi
-    
-    # Add NVIDIA modules to mkinitcpio.conf
+
     echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
     if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
-        arch-chroot /mnt sed -i '/^MODULES=(/s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm&/' /etc/mkinitcpio.conf
+        arch-chroot /mnt sed -i '/^MODULES=(/s/)/ nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
     else
         echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
     fi
+
     arch-chroot /mnt mkinitcpio -P
-    
-    # Install Intel drivers only if Intel is detected and NVIDIA is not
-    elif [ "$intel_detected" = "yes" ]; then
+fi
+
+# Install Intel drivers only if Intel is detected and NVIDIA is not
+if [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
     read -p "Install Intel video drivers? (Only affects Intel machines) (Y/n): " CONFIRM
     if [[ $CONFIRM != [nN] ]]; then
         arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
     fi
-    # Install AMD drivers if AMD graphics are detected
-    elif [ "$amd_detected" = "yes" ]; then
+fi
+
+# Install AMD drivers if AMD graphics are detected
+if [ "$amd_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
 fi
-
 
 # = Micro Code = #
 
