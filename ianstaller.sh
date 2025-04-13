@@ -831,7 +831,7 @@ EOF"
 arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/Pictures\" \"$USER_HOME\""
 
 # Create .fehbg file and make it executable
-arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
+arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/DSC_0471.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
 
 # Handle fonts
 arch-chroot /mnt /bin/bash -c "cp \"$DOTFILES_DIR\"/fonts/* /usr/share/fonts/"
