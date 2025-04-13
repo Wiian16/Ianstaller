@@ -572,14 +572,16 @@ if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
     
-    # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
-    echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
-    if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
-        arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
-    else
-        echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
+    if [[ $INSTALL_TYPE = "drive" ]]; then
+        # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
+        echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
+        if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
+            arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
+        else
+            echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
+        fi
+        arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
     fi
-    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
     
     # Add NVIDIA modules to mkinitcpio.conf
     echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
