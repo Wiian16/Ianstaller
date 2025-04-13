@@ -713,20 +713,20 @@ PACKAGES=(
     ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk
     
     # Desktop Depends
-    rofi                               # Rofi menues
-    feh viewnior                       # View Images
-    copyq                              # Clipboard manager/history
-    alsa-utils pulseaudio playerctl    # Audio
-    arandr                             # GUI display manager
-    neovim ranger htop fastfetch gdu   # Terminal Applications
-    rofi-calc                          # Calculator
-    sed jq imagemagick pastel          # Dependencies for theme script
-    file-roller tumbler xarchiver      # Thunar extentions, archiver
-    ffmpegthumbnailer gst-libav        # More Thunar extentions
-    xcolor                             # Color Picker
-    xdotool maim xclip                 # Screen Shots
-    pulsemixer                         # Audio control
-    bc                                 # Command line calculations
+    rofi                                      # Rofi menues
+    feh viewnior                              # View Images
+    copyq                                     # Clipboard manager/history
+    alsa-utils pulseaudio playerctl           # Audio
+    arandr                                    # GUI display manager
+    vi vim neovim ranger htop fastfetch gdu   # Terminal Applications
+    rofi-calc                                 # Calculator
+    sed jq imagemagick pastel                 # Dependencies for theme script
+    file-roller tumbler xarchiver             # Thunar extentions, archiver
+    ffmpegthumbnailer gst-libav               # More Thunar extentions
+    xcolor                                    # Color Picker
+    xdotool maim xclip                        # Screen Shots
+    pulsemixer                                # Audio control
+    bc                                        # Command line calculations
     
     # System Packages
     gnome-keyring libsecret   # Applications to store passwords/data
@@ -763,6 +763,7 @@ PACKAGES=(
     samba       # Samba client for network shares
     fzf         # Fuzzy searcher
     npm         # Node.js 
+    unzip       # Unpack zip archives
 
     # For Sddm Theme
     qt6-5compat qt6-declarative qt6-svg
@@ -869,7 +870,7 @@ EOF"
 arch-chroot /mnt su - "$USER_NAME" -c "cp -r \"$DOTFILES_DIR/Pictures\" \"$USER_HOME\""
 
 # Create .fehbg file and make it executable
-arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/ZenWhiteFlower_AnnieSpratt.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
+arch-chroot /mnt su - "$USER_NAME" -c "echo -e '#!/bin/sh\nfeh --no-fehbg --bg-fill '\''/home/$USER_NAME/Pictures/Wallpapers/DSC_0471.jpg'\''' > \"$USER_HOME/.fehbg\" && chmod +x \"$USER_HOME/.fehbg\""
 
 # Handle fonts
 arch-chroot /mnt /bin/bash -c "cp \"$DOTFILES_DIR\"/fonts/* /usr/share/fonts/"
@@ -915,12 +916,13 @@ alias neofetch=\"fastfetch\"
 alias nf=\"clear && fastfetch\"
 alias ff=\"fastfetch\"
 alias cclear=\"sudo sh -c '/usr/bin/echo 3 > /proc/sys/vm/drop_caches'\"
-alias nv=\"nvim\"
+alias nvim-lazy=\"NVIM_APPNAME=Lazy nvim\"
+alias nv=\"nvim-lazy\"
 alias cls=\"clear\"
 
 # Neovim switcher
 function nvims() {
-  items=(\"default\")
+  items=(\"default\" \"Lazy\")
   config=\$(printf \"%s\n\" \"\${items[@]}\" | fzf --prompt=\" Neovim Config  \" --height=~50% --layout=reverse --border --exit-0)
   if [[ -z \$config ]]; then
     echo \"Nothing selected\"
