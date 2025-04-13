@@ -113,8 +113,10 @@ finishing-cleanup() {
     sleep 5 # Give some time for the buffers to flush
     
     # Unmount partitions in reverse order of mounting
-    echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
-    umount /mnt/boot/efi || true
+    if [[ $INSTALL_TYPE == "drive" ]]; then
+        echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
+        umount /mnt/boot/efi || true
+    fi
     
     # Optionally deactivate swap if it was activated
     echo -e "${BRIGHT_BLUE}Deactivating Swap...${NC}"
@@ -141,7 +143,9 @@ error-cleanup(){
     sleep 5 # Give some time for the buffers to flush
     
     # Unmount partitions in reverse order of mounting
-    umount /mnt/boot/efi || true
+    if [[ $INSTALL_TYPE == "drive" ]]; then
+        umount /mnt/boot/efi || true
+    fi
     
     # Optionally deactivate swap if it was activated
     swapoff /mnt/swapfile || true
