@@ -317,9 +317,7 @@ echo -e "${BRIGHT_BLUE}Hostname:${NC} $HOSTNAME"
 echo -e "${BRIGHT_BLUE}Timezone:${NC} $TIMEZONE"
 echo -e "${BRIGHT_BLUE}New user:${NC} $USER_NAME"
 echo -e "${BRIGHT_BLUE}User password:${NC} (hidden)"
-if [[ "$INSTALL_TYPE" == "drive" ]]; then
-    echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
-fi
+echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
 echo -e "${BRIGHT_BLUE}Root Partition:${NC} $ROOT_PARTITION"
 if [[ "$INSTALL_TYPE" == "drive" ]]; then
     echo -e "${BRIGHT_BLUE}Removable Drive:${NC} $REMOVABLE_TEXT"
@@ -378,10 +376,8 @@ fi
 # Mount the partition(s)
 echo -e "${BOLD_BRIGHT_BLUE}Mounting the partition(s)...${NC}"
 mount "$ROOT_PARTITION" /mnt
-if [[ "$INSTALL_TYPE" == "drive" ]]; then
-    mkdir -p /mnt/boot/efi
-    mount "$EFI_PARTITION" /mnt/boot/efi
-fi
+mkdir -p /mnt/boot/efi
+mount "$EFI_PARTITION" /mnt/boot/efi
 
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
@@ -490,23 +486,16 @@ echo -e "${BOLD_BRIGHT_BLUE}Enabling systemd-timesyncd for time synchronization.
 arch-chroot /mnt systemctl enable systemd-timesyncd.service
 
 
-# Create the /mnt/lib/modules directory
-mkdir -p /mnt/lib/modules
-mount --bind /lib/modules /mnt/lib/modules
-
 # Install and setup UFW
-echo -e "${BOLD_BRIGHT_BLUE}Installing and setting up UFW (Uncomplicated Firewall)...${NC}"
-arch-chroot /mnt pacman -S --noconfirm ufw
-# Enable basic firewall rules (deny incoming, allow outgoing)
-arch-chroot /mnt ufw default deny incoming
-arch-chroot /mnt ufw default allow outgoing
-# Enable the firewall
-arch-chroot /mnt ufw enable
-# Enable UFW to start on boot
-arch-chroot /mnt systemctl enable ufw
-# Unbind /lib/modules after setting up UFW and before enabling any services
-umount /mnt/lib/modules
-
+echo -e "${BLUE}Installing and configuring UFW…${NC}"
+arch-chroot /mnt bash -eux -c "\
+  pacman -S --noconfirm ufw && \
+  # disable ipv6 so `modprobe ip6_tables` isn’t called here
+  sed -i 's/^IPV6=yes/IPV6=no/' /etc/ufw/ufw.conf && \
+  ufw default deny incoming && \
+  ufw default allow outgoing"
+# enable the service unit; actual `ufw enable` can be run on first boot
+arch-chroot /mnt systemctl enable ufw.service
 
 
 
