@@ -8,6 +8,7 @@ packages, configurations, and a beautiful desktop environment (with my own custo
 ## Features
 
 - Automated disk partitioning and formatting
+- Install options for full disks and partitions
 - Installation of essential packages and configurations
 - User account creation and configuration
 - Installation of graphics drivers, audio packages, and Bluetooth support
@@ -23,6 +24,7 @@ packages, configurations, and a beautiful desktop environment (with my own custo
 - A bootable Arch Linux ISO USB
 - An internet connection
 - **UEFI firmware (this script does not support BIOS installations)**
+- If using the partition install mode, an efi bootloader is required
 
 ## Usage
 
@@ -49,7 +51,7 @@ packages, configurations, and a beautiful desktop environment (with my own custo
    - Enter the timezone (e.g., `America/New_York`)
    - Enter the new username
    - Enter and confirm the password for the new user (this will also be the root password)
-   - Select the device to install on (e.g., `sda`)
+   - Select the device to install on (e.g., `sda`, `/dev/sda1`)
    - Enter the swap size in GiB (0 for no swap)
    - Confirm the installation summary and proceed
 
@@ -62,7 +64,7 @@ The script will perform the following steps:
 
 2. **Level 0 Installation:**
    - Modifies `pacman.conf` for parallel downloads and color.
-   - Partitions and formats the disk.
+   - Partitions and formats the disk or partition.
    - Mounts the partitions.
    - Installs essential packages.
    - Configures the system (timezone, locale, hostname, etc.).
@@ -201,7 +203,10 @@ more about Archcraft and its creator here:
 - [Archcraft Website](https://archcraft.io/)
 - [adi1090x's Github](https://github.com/adi1090x)
 
+Additionally, this fork is based off of [JamInstaller](github.com/samsterjam/JamInstaller) and much of the difficult 
+work comes from here, I encourage you to explore it, too.
+
 ---
 
 **Note:** This script is provided as-is without any warranty. Use it at your own risk. Always back up your data before 
-running any installation script.
+running any installation script. 

@@ -71,6 +71,20 @@ validate_hostname() {
     fi
 }
 
+# Function to validat partition
+validate_partition() {
+    local device="$1"
+    if [ -b "$device" ]; then
+        # Check if it looks like a partition (e.g., ends in a digit or 'p' followed by a digit)
+        if [[ "$device" =~ [0-9]$ || "$device" =~ p[0-9]+$ ]]; then
+            return 0
+        fi
+    fi
+    echo -e "${RED}Invalid partition. Please enter a valid partition (e.g., sda1, nvme0n1p1).${NC}"
+    return 1
+}
+
+
 # Function to get the available disk space in GiB
 get_available_disk_space() {
     local device=$1
@@ -85,6 +99,11 @@ list_devices() {
     lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE,MODEL -d | awk 'NR>1 {print}'
 }
 
+list_partitions() {
+    echo -e "${YELLOW}Available devices:${NC}"
+    lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE,MODEL -x NAME | grep -v disk
+}
+
 
 # === Cleanup Functions === #
 
@@ -94,8 +113,10 @@ finishing-cleanup() {
     sleep 5 # Give some time for the buffers to flush
     
     # Unmount partitions in reverse order of mounting
-    echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
-    umount /mnt/boot/efi || true
+    if [[ $INSTALL_TYPE == "drive" ]]; then
+        echo -e "${BRIGHT_BLUE}Unmounting efi...${NC}"
+        umount /mnt/boot/efi || true
+    fi
     
     # Optionally deactivate swap if it was activated
     echo -e "${BRIGHT_BLUE}Deactivating Swap...${NC}"
@@ -122,7 +143,9 @@ error-cleanup(){
     sleep 5 # Give some time for the buffers to flush
     
     # Unmount partitions in reverse order of mounting
-    umount /mnt/boot/efi || true
+    if [[ $INSTALL_TYPE == "drive" ]]; then
+        umount /mnt/boot/efi || true
+    fi
     
     # Optionally deactivate swap if it was activated
     swapoff /mnt/swapfile || true
@@ -194,58 +217,98 @@ while true; do
 done
 echo
 
-echo -e "${BRIGHT_BLUE}===============================================${NC}"
-echo
-list_devices
-echo
-echo -e "${BRIGHT_BLUE}===============================================${NC}"
-echo
-
-# Ask for the device to install on with validation
+# Ask whether to install on an entire drive or on a specific partition
 while true; do
-    read -p "Enter the device to install on (e.g., sda): " DEVICE
-    validate_device "$DEVICE" && break
-done
-
-# Ask if the user is installing to a removable drive
-read -p "Are you installing to a removable drive? (y/N): " REMOVABLE
-if [[ $REMOVABLE =~ ^[yY]$ ]]; then
-    REMOVABLE_FLAG="--removable"
-    REMOVABLE_TEXT="Yes"
-else
-    REMOVABLE_FLAG=""
-    REMOVABLE_TEXT="No"
-fi
-
-# Ask for the swap size with validation
-while true; do
-    read -p "Enter swap size in GiB (Default no swap): " SWAP_SIZE
-    if [[ -z "$SWAP_SIZE" ]]; then
-        SWAP_SIZE=0
+    read -p "Install on an entire drive or a specific partition? (drive/partition): " INSTALL_TYPE
+    if [[ "$INSTALL_TYPE" =~ ^(drive|partition)$ ]]; then
         break
-        elif [[ "$SWAP_SIZE" =~ ^[0-9]+$ ]] && [ "$SWAP_SIZE" -ge 0 ]; then
-        available_space=$(get_available_disk_space "$DEVICE")
-        if [ "$SWAP_SIZE" -le "$available_space" ]; then
-            break
-        else
-            echo -e "${RED}Invalid swap size. The size exceeds the available disk space of ${available_space}GiB.${NC}"
-        fi
     else
-        echo -e "${RED}Invalid swap size. Please enter a non-negative integer.${NC}"
+        echo -e "${RED}Please enter 'drive' or 'partition'.${NC}"
     fi
 done
 echo
 
-# Check if the device is an NVMe drive and construct partition names accordingly
-if [[ $DEVICE == nvme* ]]; then
-    EFI_PARTITION="/dev/${DEVICE}p1"
-    ROOT_PARTITION="/dev/${DEVICE}p2"
-else
-    EFI_PARTITION="/dev/${DEVICE}1"
-    ROOT_PARTITION="/dev/${DEVICE}2"
-fi
-echo
+if [[ "$INSTALL_TYPE" == "drive" ]]; then
+    # List available devices and ask for the drive
+    list_devices
+    echo
+    while true; do
+        read -p "Enter the drive to install on (e.g., sda): " DEVICE
+        validate_device "$DEVICE" && break
+    done
 
+    # Ask if the user is installing to a removable drive
+    read -p "Are you installing to a removable drive? (y/N): " REMOVABLE
+    if [[ $REMOVABLE =~ ^[yY]$ ]]; then
+        REMOVABLE_FLAG="--removable"
+        REMOVABLE_TEXT="Yes"
+    else
+        REMOVABLE_FLAG=""
+        REMOVABLE_TEXT="No"
+    fi
+
+    # Ask for the swap size with validation
+    while true; do
+        read -p "Enter swap size in GiB (Default no swap): " SWAP_SIZE
+        if [[ -z "$SWAP_SIZE" ]]; then
+            SWAP_SIZE=0
+            break
+        elif [[ "$SWAP_SIZE" =~ ^[0-9]+$ ]] && [ "$SWAP_SIZE" -ge 0 ]; then
+            available_space=$(get_available_disk_space "$DEVICE")
+            if [ "$SWAP_SIZE" -le "$available_space" ]; then
+                break
+            else
+                echo -e "${RED}Invalid swap size. The size exceeds the available disk space of ${available_space}GiB.${NC}"
+            fi
+        else
+            echo -e "${RED}Invalid swap size. Please enter a non-negative integer.${NC}"
+        fi
+    done
+    echo
+
+    # Check if the drive is an NVMe drive and construct partition names accordingly
+    if [[ $DEVICE == nvme* ]]; then
+        EFI_PARTITION="/dev/${DEVICE}p1"
+        ROOT_PARTITION="/dev/${DEVICE}p2"
+    else
+        EFI_PARTITION="/dev/${DEVICE}1"
+        ROOT_PARTITION="/dev/${DEVICE}2"
+    fi
+else
+    # Partition installation (assumes bootloader is already set up)
+    list_partitions
+    echo
+    while true; do
+        read -p "Enter the partition to install on (e.g., /dev/sda2, /dev/nvme0n1p1): " PARTITION
+        # Use a validate_partition function or similar logic; here we assume validate_device works for partitions too.
+        validate_partition "$PARTITION" && break
+    done
+    ROOT_PARTITION="$PARTITION"
+    echo -e "${BRIGHT_BLUE}Selected root partition: ${NC}$ROOT_PARTITION"
+
+    # Ask for existing EFI partition
+    echo 
+    while true; do
+        read -p "Enter the existing EFI partition (e.g., /dev/sda2, /dev/nvme0n1p1): " PARTITION
+        validate_partition "$PARTITION" && break
+    done
+    EFI_PARTITION="$PARTITION"
+    echo -e "${BRIGHT_BLUE}Selected EFI partition: ${NC}$EFI_PARTITION"
+
+    # Ask for swap size (skip available space check since drive space may not be known)
+    while true; do
+        read -p "Enter swap size in GiB (Default no swap): " SWAP_SIZE
+        if [[ -z "$SWAP_SIZE" ]]; then
+            SWAP_SIZE=0
+            break
+        elif [[ "$SWAP_SIZE" =~ ^[0-9]+$ ]] && [ "$SWAP_SIZE" -ge 0 ]; then
+            break
+        else
+            echo -e "${RED}Invalid swap size. Please enter a non-negative integer.${NC}"
+        fi
+    done
+    echo
+fi
 
 # Confirm with the user before proceeding
 echo -e "${YELLOW}Installation Summary:${NC}"
@@ -256,7 +319,9 @@ echo -e "${BRIGHT_BLUE}New user:${NC} $USER_NAME"
 echo -e "${BRIGHT_BLUE}User password:${NC} (hidden)"
 echo -e "${BRIGHT_BLUE}EFI Partition:${NC} $EFI_PARTITION"
 echo -e "${BRIGHT_BLUE}Root Partition:${NC} $ROOT_PARTITION"
-echo -e "${BRIGHT_BLUE}Removable Drive:${NC} $REMOVABLE_TEXT"
+if [[ "$INSTALL_TYPE" == "drive" ]]; then
+    echo -e "${BRIGHT_BLUE}Removable Drive:${NC} $REMOVABLE_TEXT"
+fi
 if [ "$SWAP_SIZE" -gt 0 ]; then
     echo -e "${BRIGHT_BLUE}Swap File Size:${NC} ${SWAP_SIZE}GiB"
 else
@@ -269,14 +334,6 @@ if [[ $CONFIRM != [yY] ]]; then
     exit 1
 fi
 
-
-
-
-
-
-
-
-
 # === Level 0 Installation === #
 
 # Modify pacman.conf on Arch ISO
@@ -286,55 +343,51 @@ sed -i 's/^#Color/Color/' /etc/pacman.conf
 echo -e "${BOLD_BRIGHT_BLUE}Enabled parallel downloads and color in pacman.conf on Arch ISO.${NC}"
 echo
 
-
-
 # Update make configuration
-
-# Calculate 50% of available CPU cores using shell arithmetic
 total_cores=$(nproc)
-used_cores=$(( (total_cores * 50 + 50) / 100 ))  # This rounds to the nearest integer
-
-# Ensure at least one core is used
+used_cores=$(( (total_cores * 50 + 50) / 100 ))
 if [ "$used_cores" -lt 1 ]; then
     used_cores=1
 fi
 
-# Optimize makepkg.conf
 echo -e "${BOLD_BRIGHT_BLUE}Optimizing makepkg.conf...${NC}"
 sed -i "s/^#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$used_cores\"/" /etc/makepkg.conf
 sed -i "s/^#COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
 
+# Partition and format only if installing on an entire drive
+if [[ "$INSTALL_TYPE" == "drive" ]]; then
+    echo -e "${BOLD_BRIGHT_BLUE}Partitioning the disk...${NC}"
+    parted /dev/"$DEVICE" --script mklabel gpt
+    parted /dev/"$DEVICE" --script mkpart ESP fat32 1MiB 513MiB
+    parted /dev/"$DEVICE" --script set 1 boot on
+    parted /dev/"$DEVICE" --script mkpart primary ext4 513MiB 100%
+fi
 
+# Format the partition(s)
+if [[ "$INSTALL_TYPE" == "drive" ]]; then
+    echo -e "${BOLD_BRIGHT_BLUE}Formatting the partitions...${NC}"
+    mkfs.fat -F32 "$EFI_PARTITION"
+    mkfs.ext4 "$ROOT_PARTITION"
+else
+    echo -e "${BOLD_BRIGHT_BLUE}Formatting the partition...${NC}"
+    mkfs.ext4 "$ROOT_PARTITION"
+fi
 
-# Partition the disk
-echo -e "${BOLD_BRIGHT_BLUE}Partitioning the disk...${NC}"
-parted /dev/"$DEVICE" --script mklabel gpt
-parted /dev/"$DEVICE" --script mkpart ESP fat32 1MiB 513MiB
-parted /dev/"$DEVICE" --script set 1 boot on
-parted /dev/"$DEVICE" --script mkpart primary ext4 513MiB 100%
-
-
-# Format the partitions
-echo -e "${BOLD_BRIGHT_BLUE}Formatting the partitions...${NC}"
-mkfs.fat -F32 "$EFI_PARTITION"
-mkfs.ext4 "$ROOT_PARTITION"
-
-
-# Mount the partitions
-echo -e "${BOLD_BRIGHT_BLUE}Mounting the partitions...${NC}"
+# Mount the partition(s)
+echo -e "${BOLD_BRIGHT_BLUE}Mounting the partition(s)...${NC}"
 mount "$ROOT_PARTITION" /mnt
 mkdir -p /mnt/boot/efi
 mount "$EFI_PARTITION" /mnt/boot/efi
 
+# Ensure grub cfg dir exists
+mkdir -p /mnt/boot/grub
 
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
 pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr os-prober zsh curl wget git nano
 
-
 # Configure the system
 echo -e "${BOLD_BRIGHT_BLUE}Configuring the system...${NC}"
-
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
 arch-chroot /mnt hwclock --systohc
@@ -353,25 +406,25 @@ echo "127.0.1.1 $HOSTNAME.localdomain $HOSTNAME" >> /mnt/etc/hosts
 echo root:"$USER_PASSWORD" | chpasswd --root /mnt
 arch-chroot /mnt chsh -s /bin/zsh root
 
+# Install and configure the bootloader only for entire drive installations
+if [[ "$INSTALL_TYPE" == "drive" ]]; then
+    echo -e "${BOLD_BRIGHT_BLUE}Installing and configuring the bootloader...${NC}"
+    arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi $REMOVABLE_FLAG
 
-# Install and configure the bootloader
-echo -e "${BOLD_BRIGHT_BLUE}Installing and configuring the bootloader...${NC}"
-arch-chroot /mnt grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot/efi $REMOVABLE_FLAG
+    echo -e "${BOLD_BRIGHT_BLUE}Enabling os-prober in GRUB configuration...${NC}"
+    arch-chroot /mnt sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 
-# Enable os-prober in GRUB configuration
-echo -e "${BOLD_BRIGHT_BLUE}Enabling os-prober in GRUB configuration...${NC}"
-arch-chroot /mnt sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
-arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+    echo -e "${BOLD_BRIGHT_BLUE}Verifying UEFI boot entries...${NC}"
+    arch-chroot /mnt efibootmgr -v
 
-# Verify UEFI boot entries
-echo -e "${BOLD_BRIGHT_BLUE}Verifying UEFI boot entries...${NC}"
-arch-chroot /mnt efibootmgr -v
-
-# If GRUB entry is missing, create it manually
-if ! arch-chroot /mnt efibootmgr -v | grep -q "GRUB"; then
-    echo -e "${BOLD_BRIGHT_BLUE}Creating UEFI boot entry for GRUB...${NC}"
-    arch-chroot /mnt efibootmgr --create --disk /dev/"$DEVICE" --part 1 --label "GRUB" --loader /EFI/GRUB/grubx64.efi
+    if ! arch-chroot /mnt efibootmgr -v | grep -q "GRUB"; then
+        echo -e "${BOLD_BRIGHT_BLUE}Creating UEFI boot entry for GRUB...${NC}"
+        arch-chroot /mnt efibootmgr --create --disk /dev/"$DEVICE" --part 1 --label "GRUB" --loader /EFI/GRUB/grubx64.efi
+    fi
+else
+    echo -e "${BOLD_BRIGHT_BLUE}Skipping bootloader installation as bootloader is pre-configured on the target partition.${NC}"
 fi
 
 # Modify pacman.conf on the new system
@@ -384,12 +437,10 @@ arch-chroot /mnt pacman -Sy
 echo -e "${GREEN}Enabled parallel downloads, multilib, and color in pacman.conf on the new system.${NC}"
 echo
 
-
 # Optimize makepkg.conf on the newly installed system
 echo -e "${BOLD_BRIGHT_BLUE}Optimizing makepkg.conf on the newly installed system...${NC}"
 arch-chroot /mnt sed -i "s/^#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j$used_cores\"/" /etc/makepkg.conf
 arch-chroot /mnt sed -i "s/^COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -c -z - --threads=$used_cores)/" /etc/makepkg.conf
-
 
 # Optimize disk I/O for SSD on the newly installed system
 echo -e "${BOLD_BRIGHT_BLUE}Optimizing disk I/O for SSD on the newly installed system...${NC}"
@@ -438,23 +489,16 @@ echo -e "${BOLD_BRIGHT_BLUE}Enabling systemd-timesyncd for time synchronization.
 arch-chroot /mnt systemctl enable systemd-timesyncd.service
 
 
-# Create the /mnt/lib/modules directory
-mkdir -p /mnt/lib/modules
-mount --bind /lib/modules /mnt/lib/modules
-
 # Install and setup UFW
-echo -e "${BOLD_BRIGHT_BLUE}Installing and setting up UFW (Uncomplicated Firewall)...${NC}"
-arch-chroot /mnt pacman -S --noconfirm ufw
-# Enable basic firewall rules (deny incoming, allow outgoing)
-arch-chroot /mnt ufw default deny incoming
-arch-chroot /mnt ufw default allow outgoing
-# Enable the firewall
-arch-chroot /mnt ufw enable
-# Enable UFW to start on boot
-arch-chroot /mnt systemctl enable ufw
-# Unbind /lib/modules after setting up UFW and before enabling any services
-umount /mnt/lib/modules
-
+echo -e "${BLUE}Installing and configuring UFW…${NC}"
+arch-chroot /mnt bash -eux -c "\
+  pacman -S --noconfirm ufw && \
+  # disable ipv6 so `modprobe ip6_tables` isn’t called here
+  sed -i 's/^IPV6=yes/IPV6=no/' /etc/ufw/ufw.conf && \
+  ufw default deny incoming && \
+  ufw default allow outgoing"
+# enable the service unit; actual `ufw enable` can be run on first boot
+arch-chroot /mnt systemctl enable ufw.service
 
 
 
@@ -532,8 +576,7 @@ nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "yes" || ec
 if [ "$nvidia_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}NVIDIA graphics detected. Installing NVIDIA drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm nvidia nvidia-utils nvidia-settings
-    
-    # Add nvidia_drm.modeset=1 to GRUB_CMDLINE_LINUX_DEFAULT
+
     echo -e "${BOLD_BRIGHT_BLUE}Configuring GRUB for NVIDIA...${NC}"
     if grep -q 'GRUB_CMDLINE_LINUX_DEFAULT' /mnt/etc/default/grub; then
         arch-chroot /mnt sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=".*\)"$/\1 nvidia_drm.modeset=1"/' /etc/default/grub
@@ -541,29 +584,31 @@ if [ "$nvidia_detected" = "yes" ]; then
         echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet nvidia_drm.modeset=1"' | arch-chroot /mnt tee -a /etc/default/grub > /dev/null
     fi
     arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-    
-    # Add NVIDIA modules to mkinitcpio.conf
+
     echo -e "${BOLD_BRIGHT_BLUE}Adding NVIDIA modules to initramfs...${NC}"
     if grep -q '^MODULES=' /mnt/etc/mkinitcpio.conf; then
-        arch-chroot /mnt sed -i '/^MODULES=(/s/)$/ nvidia nvidia_modeset nvidia_uvm nvidia_drm&/' /etc/mkinitcpio.conf
+        arch-chroot /mnt sed -i '/^MODULES=(/s/)/ nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
     else
         echo 'MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)' | arch-chroot /mnt tee -a /etc/mkinitcpio.conf > /dev/null
     fi
+
     arch-chroot /mnt mkinitcpio -P
-    
-    # Install Intel drivers only if Intel is detected and NVIDIA is not
-    elif [ "$intel_detected" = "yes" ]; then
+fi
+
+# Install Intel drivers only if Intel is detected and NVIDIA is not
+if [ "$intel_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}Intel graphics detected. Installing Intel drivers...${NC}"
     read -p "Install Intel video drivers? (Only affects Intel machines) (Y/n): " CONFIRM
     if [[ $CONFIRM != [nN] ]]; then
         arch-chroot /mnt pacman -S --noconfirm xf86-video-intel
     fi
-    # Install AMD drivers if AMD graphics are detected
-    elif [ "$amd_detected" = "yes" ]; then
+fi
+
+# Install AMD drivers if AMD graphics are detected
+if [ "$amd_detected" = "yes" ]; then
     echo -e "${BOLD_BRIGHT_BLUE}AMD graphics detected. Installing AMD drivers...${NC}"
     arch-chroot /mnt pacman -S --noconfirm xf86-video-amdgpu
 fi
-
 
 # = Micro Code = #
 
