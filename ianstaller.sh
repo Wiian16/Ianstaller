@@ -17,6 +17,98 @@ BRIGHT_BLUE='\033[1;34m' # Bright Blue
 BOLD_BRIGHT_BLUE='\033[1;94m' # Bold and Bright Blue
 NC='\033[0m' # No Color
 
+# Define an array of packages to install
+PACKAGES=(
+    
+    # Xorg
+    xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd
+    
+    bspwm sxhkd        # Window manager and hotkeys
+    sddm               # Display manager
+    thunar             # GUI file manager
+    alacritty          # GPU terminal
+    polybar            # Info-bar at top
+    picom              # Compositor (blur, shadows, vsync, etc...)
+    dunst              # Notification display
+    lxappearance       # Change themes, icons, fonts, and cursors
+    
+    # Fonts
+    ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk
+    
+    # Desktop Depends
+    rofi                                      # Rofi menues
+    feh viewnior                              # View Images
+    copyq                                     # Clipboard manager/history
+    alsa-utils pulseaudio playerctl           # Audio
+    arandr                                    # GUI display manager
+    vi vim neovim ranger htop fastfetch gdu   # Terminal Applications
+    rofi-calc                                 # Calculator
+    sed jq imagemagick pastel                 # Dependencies for theme script
+    file-roller tumbler xarchiver             # Thunar extentions, archiver
+    ffmpegthumbnailer gst-libav               # More Thunar extentions
+    xcolor                                    # Color Picker
+    xdotool maim xclip                        # Screen Shots
+    pulsemixer                                # Audio control
+    bc                                        # Command line calculations
+    
+    # System Packages
+    gnome-keyring libsecret   # Applications to store passwords/data
+    qt5                       # Required dependency
+    tree                      # Terminal tree view
+    papirus-icon-theme xapp   # Icons for rofi and applications
+    noto-fonts-emoji          # Emojis
+    xdg-user-dirs             # Generate and assign home directories
+    udiskie                   # Auto mounnt USBs
+    man                       # For help instructions
+    gparted                   # For formating etc..
+    github-cli                # For Github to save your credentials
+    gvfs                      # For thunar's trash and OS volumes
+    reflector                 # For Updating mirror list
+    man-pages                 # For help instructions
+    
+    # Applications
+    mpv         # Minimal Video Player
+    vlc         # Multi-Video formater and playback
+    gimp        # Image editor
+    discord     # ... discord
+    obs-studio  # Recording Videos
+    btop        # Monitoring System Resources
+    zoxide      # cd Autocompletion
+    sl          # ...
+    obsidian	# Note Taking
+    firefox     # Web Browsing
+    inkscape	# Vector Image Editor
+    libreoffice-fresh  # Rich Text Editor Suite
+    atril       # PDF Viewer
+    bitwarden   # Password Manager
+    vlc         # Video Player
+    github-cli  # Github Credential Manager
+    samba       # Samba client for network shares
+    fzf         # Fuzzy searcher
+    npm         # Node.js 
+    unzip       # Unpack zip archives
+
+    # For Sddm Theme
+    qt6-5compat qt6-declarative qt6-svg
+)
+
+AUR_PACKAGES=(
+    ksuperkey               # Superkey launches rofi menu
+    xfce-polkit             # Agent for handling permissions
+    python-pywal            # Generate color schemes for theme script
+    nordic-darker-theme     # GTK theme
+    i3lock-color            # Lock dependency takes in colors
+    i3lock-fancy-rapid-git  # Blur lock screen
+    qt5-styleplugins        # Copies GTK theme to qt
+    
+    # Applications
+    google-chrome           # Web browser
+    visual-studio-code-bin  # Code and Text editor
+    zoom                    # Meeting Software
+    #backlight_control       # Control backlight
+    nvim-lazy               # Neovim lazy package manager
+)
+
 # Check if the script is run as root
 if [ "$EUID" -ne 0 ]; then
     echo -e "${RED}This script must be run as root. Please run with sudo or as the root user.${NC}"
@@ -504,97 +596,6 @@ level-4(){
     echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" | arch-chroot /mnt tee /etc/sudoers.d/$USER_NAME
 
 
-    # Define an array of packages to install
-    PACKAGES=(
-        
-        # Xorg
-        xorg-server xorg-xinit xorg-apps xorg-xrandr xorg-xsetroot xorg-xbacklight xsettingsd
-        
-        bspwm sxhkd        # Window manager and hotkeys
-        sddm               # Display manager
-        thunar             # GUI file manager
-        alacritty          # GPU terminal
-        polybar            # Info-bar at top
-        picom              # Compositor (blur, shadows, vsync, etc...)
-        dunst              # Notification display
-        lxappearance       # Change themes, icons, fonts, and cursors
-        
-        # Fonts
-        ttf-dejavu ttf-liberation noto-fonts ttf-jetbrains-mono-nerd ttf-jetbrains-mono noto-fonts-cjk
-        
-        # Desktop Depends
-        rofi                                      # Rofi menues
-        feh viewnior                              # View Images
-        copyq                                     # Clipboard manager/history
-        alsa-utils pulseaudio playerctl           # Audio
-        arandr                                    # GUI display manager
-        vi vim neovim ranger htop fastfetch gdu   # Terminal Applications
-        rofi-calc                                 # Calculator
-        sed jq imagemagick pastel                 # Dependencies for theme script
-        file-roller tumbler xarchiver             # Thunar extentions, archiver
-        ffmpegthumbnailer gst-libav               # More Thunar extentions
-        xcolor                                    # Color Picker
-        xdotool maim xclip                        # Screen Shots
-        pulsemixer                                # Audio control
-        bc                                        # Command line calculations
-        
-        # System Packages
-        gnome-keyring libsecret   # Applications to store passwords/data
-        qt5                       # Required dependency
-        tree                      # Terminal tree view
-        papirus-icon-theme xapp   # Icons for rofi and applications
-        noto-fonts-emoji          # Emojis
-        xdg-user-dirs             # Generate and assign home directories
-        udiskie                   # Auto mounnt USBs
-        man                       # For help instructions
-        gparted                   # For formating etc..
-        github-cli                # For Github to save your credentials
-        gvfs                      # For thunar's trash and OS volumes
-        reflector                 # For Updating mirror list
-        man-pages                 # For help instructions
-        
-        # Applications
-        mpv         # Minimal Video Player
-        vlc         # Multi-Video formater and playback
-        gimp        # Image editor
-        discord     # ... discord
-        obs-studio  # Recording Videos
-        btop        # Monitoring System Resources
-        zoxide      # cd Autocompletion
-        sl          # ...
-        obsidian	# Note Taking
-        firefox     # Web Browsing
-        inkscape	# Vector Image Editor
-        libreoffice-fresh  # Rich Text Editor Suite
-        atril       # PDF Viewer
-        bitwarden   # Password Manager
-        vlc         # Video Player
-        github-cli  # Github Credential Manager
-        samba       # Samba client for network shares
-        fzf         # Fuzzy searcher
-        npm         # Node.js 
-        unzip       # Unpack zip archives
-
-        # For Sddm Theme
-        qt6-5compat qt6-declarative qt6-svg
-    )
-
-    AUR_PACKAGES=(
-        ksuperkey               # Superkey launches rofi menu
-        xfce-polkit             # Agent for handling permissions
-        python-pywal            # Generate color schemes for theme script
-        nordic-darker-theme     # GTK theme
-        i3lock-color            # Lock dependency takes in colors
-        i3lock-fancy-rapid-git  # Blur lock screen
-        qt5-styleplugins        # Copies GTK theme to qt
-        
-        # Applications
-        google-chrome           # Web browser
-        visual-studio-code-bin  # Code and Text editor
-        zoom                    # Meeting Software
-        #backlight_control       # Control backlight
-        nvim-lazy               # Neovim lazy package manager
-    )
 
 
     # Install all packages in the array
