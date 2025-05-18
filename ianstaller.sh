@@ -461,7 +461,7 @@ level-2(){
     arch-chroot /mnt systemctl enable tlp.service
 }
 
-leve-3(){
+level-3(){
     # = Graphics Drivers = #
     # Check if lspci is available
     if ! command -v lspci &> /dev/null; then
