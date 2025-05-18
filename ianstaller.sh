@@ -379,6 +379,9 @@ mount "$ROOT_PARTITION" /mnt
 mkdir -p /mnt/boot/efi
 mount "$EFI_PARTITION" /mnt/boot/efi
 
+# Ensure grub cfg dir exists
+mkdir -p /mnt/boot/grub
+
 # Install essential packages
 echo -e "${BOLD_BRIGHT_BLUE}Installing essential packages...${NC}"
 pacstrap /mnt base linux linux-firmware linux-headers grub efibootmgr os-prober zsh curl wget git nano
