@@ -745,8 +745,7 @@ level-4(){
     }
 
     # Setup zoxide for cd
-    eval \"\$(zoxide init zsh --cmd cd)\"
-    EOF"
+    eval \"\$(zoxide init zsh --cmd cd)\""
 
     # Change ZSH_THEME to "archcraft" in .zshrc
     arch-chroot /mnt su - "$USER_NAME" -c "sed -i 's/^ZSH_THEME=\".*\"/ZSH_THEME=\"archcraft\"/' \"$USER_HOME/.zshrc\""
