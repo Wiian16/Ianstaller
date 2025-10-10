@@ -26,11 +26,12 @@ Set up the installer's structure, shared utilities, and configuration handling.
     - Prompt utilities (`confirm()`, `pause()`)
     - Execution wrappers with error handling
 - [ ] Write main runner (`install.sh`)
-    - Parse main arguments (`--dry-run`, `--skil <module>`)
+    - Parse main arguments (`--dry-run`, `--skip <module>`)
     - Source `config.sh` and each module sequentially
     - Log to `ianstaller.log`
 - [ ] Add dry-run mode
     - Replace destructive commands with `echo` when `DRY_RUN=true`
+- [ ] Add a laptop toggle for laptop-specific packages and configs
 
 ## 2. Core Installation Pipeline
 
