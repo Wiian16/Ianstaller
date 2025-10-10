@@ -16,12 +16,12 @@ Arch with Btrfs, bspwm, and my dotfiles while supporting development and gaming 
 
 Set up the installer's structure, shared utilities, and configuration handling.
 
-- [ ] Create project structure
+- [x] Create project structure
     - `ianstaller/` root with `/modules`, `/docs`
 - [ ] Write `config.sh`
     - Define username, hostname, drive, filesystem options, package groups
     - Include per-profile configs (desktop / dev / gaming)
-- [ ] Write `helpers.sh`
+- [x] Write `helpers.sh`
     - Logging functions (`info()`, `warn()` `error()`)
     - Prompt utilities (`confirm()`, `pause()`)
     - Execution wrappers with error handling
