@@ -1,0 +1,35 @@
+# ─────────────────────────────
+# DEVELOPMENT ENVIRONMENT PACKAGES
+# ─────────────────────────────
+# Programming tools, editors, SDKs, and developer-quality-of-life utilities.
+
+# Core Development Tools
+git                 # Version control system
+npm                 # Node.js package manager
+python              # Scripting and tooling language (dependency for many)
+python-pip          # Python package manager
+
+# IDEs and Editors
+github-cli                       # GitHub integration and authentication in terminal
+intellij-idea-community-edition  # Jetbrains Java IDE
+
+# Build and Compile (optional expansion later)
+go                  # Go programming language
+rust                # Rust compiler and Cargo package manager
+base-devel          # Needed for building AUR packages (make, gcc, etc.)
+
+# Virtualization & Containers
+docker              # Container runtime
+docker-compose      # Multi-container orchestration
+virt-manager        # Manage QEMU/KVM VMs via GUI
+qemu-full           # Full QEMU virtualization suite
+libvirt             # Virtualization backend
+dnsmasq             # DHCP support for virtual networks
+
+# Remote Access
+openssh             # SSH client and server
+sshpass             # Non-interactive SSH password utility
+rsync               # File sync and transfer
+mtr                 # Network diagnostic (ping + traceroute)
+wget                # Download utility
+curl                # Transfer data from URLs

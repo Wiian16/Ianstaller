@@ -1,0 +1,61 @@
+# ─────────────────────────────
+# DESKTOP ENVIRONMENT PACKAGES
+# ─────────────────────────────
+# Provides the full X11 + bspwm desktop environment.
+# Includes display management, compositing, notifications, and utilities.
+
+# Xorg Display Stack
+xorg-server         # X11 display server
+xorg-xinit          # Starts X sessions (used with .xinitrc)
+xorg-apps           # Common X utilities (xclock, xset, etc.)
+xorg-xrandr         # Configure displays / resolutions
+xorg-xsetroot       # Set root window color / wallpaper (bspwm needs it)
+xorg-xbacklight     # Adjust screen brightness via X
+xsettingsd          # Daemon for GTK settings and themes under bspwm
+
+# Window Manager and Session
+bspwm               # Tiling window manager
+sxhkd               # Hotkey daemon for bspwm keybinds
+sddm                # Display manager for login sessions
+polybar             # Status bar at top of screen
+picom               # Compositor for transparency, blur, and vsync
+dunst               # Notification daemon
+lxappearance        # GTK theme and icon selector
+
+# File Management
+thunar              # Lightweight file manager (XFCE)
+file-roller         # GUI archive manager (zip, tar, etc.)
+tumbler             # Thumbnailing service for Thunar
+xarchiver           # Alternative archive GUI
+ffmpegthumbnailer   # Thumbnail generator for video files
+gst-libav           # Additional codec support for thumbnails
+
+# Fonts and Theming
+pastel              # CLI color tool used in theme scripts
+imagemagick         # Image manipulation utilities (used in theming)
+xcolor              # Pick colors from the screen
+
+# Audio and Media
+alsa-utils          # ALSA sound utilities
+pulseaudio          # Audio server
+playerctl           # Control media players via shell
+pulsemixer          # Terminal mixer for PulseAudio
+arandr              # GUI display layout manager
+
+# User Interface Tools
+rofi                # Application launcher / dmenu replacement
+rofi-calc           # Calculator plugin for rofi
+copyq               # Clipboard manager with history TODO: Considering moving away from copyq b/c of qt issues
+feh                 # Image viewer and wallpaper setter
+viewnior            # Simple image viewer
+xdotool             # Simulate keyboard/mouse input
+maim                # Screenshot utility
+xclip               # Copy/paste images or text via clipboard
+
+# System Integration
+qt5                 # Qt 5 libraries (required by many GUI tools)
+qt6-5compat         # Compatibility layer between Qt5 and Qt6
+qt6-declarative     # Declarative UI modules for Qt6
+qt6-svg             # SVG support for Qt6 (needed by SDDM themes)
+xapp                # GTK utilities shared by Linux Mint/XFCE environments
+

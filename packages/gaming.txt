@@ -1,0 +1,14 @@
+# ─────────────────────────────
+# GAMING ENVIRONMENT PACKAGES
+# ─────────────────────────────
+# Provides a full gaming setup with Steam, Wine, and performance layers.
+
+# Core Gaming Stack
+steam               # Primary gaming platform for Linux
+mangohud            # Overlay displaying FPS and system metrics
+gamemode            # Performance tuning daemon (from Feral Interactive)
+
+# Wine and Proton
+wine                # Windows compatibility layer
+winetricks          # Helper for installing Windows DLLs and fonts
+

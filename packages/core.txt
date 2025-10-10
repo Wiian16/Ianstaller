@@ -1,0 +1,57 @@
+# ─────────────────────────────
+# CORE SYSTEM PACKAGES
+# ─────────────────────────────
+# Fundamental packages for all profiles.
+# Provides basic system tools, fonts, and shell utilities.
+# These should install cleanly on both minimal and full setups.
+
+# Base system & firmware
+base                # Core Arch Linux base system (kernel, pacman, etc.)
+linux               # Latest Linux kernel
+linux-firmware      # Official firmware for CPUs, GPUs, and network devices
+
+# Documentation and help
+man                 # View command documentation (man pages)
+man-pages           # Additional man page documentation
+
+# Filesystem & utilities
+tree                # Display directory trees
+reflector           # Automatically update and rank mirrorlists
+xdg-user-dirs       # Creates standard ~/Documents ~/Downloads folders
+bc                  # Command-line calculator
+jq                  # JSON processor for scripts
+sed                 # Stream editor for text manipulation
+unzip               # Extract ZIP archives
+gdu                 # Disk usage analyzer (faster than du)
+
+# Shell tools & text editors
+vi                  # Basic text editor (vi clone)
+vim                 # More fully-featured text editor
+neovim              # Modern Vim-compatible editor
+ranger              # Terminal file manager
+fzf                 # Fuzzy finder for interactive searches
+fastfetch           # System info summary tool
+
+# System monitoring
+htop                # Interactive process viewer
+
+# Fonts (general + CJK + emoji)
+ttf-dejavu          # Common serif/sans/mono font family
+ttf-liberation      # Fonts compatible with MS core fonts
+noto-fonts          # Google Noto sans/serif family
+noto-fonts-cjk      # Chinese, Japanese, Korean support
+noto-fonts-emoji    # Emoji font set
+ttf-jetbrains-mono  # JetBrains developer font
+ttf-jetbrains-mono-nerd  # Nerd Font version (icons for terminals)
+
+# Icons & theming base
+papirus-icon-theme  # Modern system-wide icon theme
+xapp                # Common desktop utilities (icons, dialogs)
+
+# System integration
+gvfs                # Virtual filesystem support (trash, remote mounts)
+udiskie             # Automount USB drives and external disks
+gparted             # GUI partition manager
+libsecret           # Secret storage API (used by password managers)
+gnome-keyring       # Backend keyring service for password storage
+

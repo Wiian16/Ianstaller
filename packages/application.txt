@@ -1,0 +1,31 @@
+# ─────────────────────────────
+# GENERAL DESKTOP APPLICATIONS
+# ─────────────────────────────
+# Core user applications for daily productivity, media, and general use.
+
+# Web Browsers
+firefox             # Main browser
+
+# Communication
+discord             # Chat / voice platform
+
+# Media & Graphics
+mpv                 # Minimal video player
+vlc                 # Full-featured video player
+gimp                # Image editing software
+inkscape            # Vector graphics editor
+ffmpeg              # Command-line video/audio processor
+obs-studio          # Screen recording and streaming
+viewnior            # Lightweight image viewer (duplicate but useful)
+atril               # PDF and document viewer
+
+# Productivity
+libreoffice-fresh   # Office suite (Writer, Calc, Impress, etc.)
+bitwarden           # Password manager
+obsidian            # Markdown-based note-taking app
+samba               # SMB network share utilities
+
+# Quality-of-Life CLI Tools
+zoxide              # Smart directory jumping (cd replacement)
+sl                  # ...you typed 'ls' wrong
+
