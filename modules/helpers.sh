@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 # helpers.sh -- Core utility functions for ianstaller
 
-set -Eeuo pipefail
-
-# ==============================  
+# ==============================
 # Logging and Formatting
-# ==============================  
+# ==============================
 
-# Color codes 
+# Color codes
 CLR_RESET="\033[0m"
 CLR_BOLD="\033[1m"
 CLR_RED="\033[1;31m"
@@ -23,22 +21,23 @@ timestamp() {
 
 # Core log function
 log() {
-    local level="$1"; shift
-    local color="$1"; shift
+    local level="$1"
+    shift
+    local color="$1"
+    shift
     local message="$*"
     echo -e "${color}[$(timestamp)] [$level]${CLR_RESET} $message"
 }
 
 # Log levels
-info()  { log "INFO"  "$CLR_GREEN" "$*"; }
-warn()  { log "WARN"  "$CLR_YELLOW" "$*"; }
+info() { log "INFO" "$CLR_GREEN" "$*"; }
+warn() { log "WARN" "$CLR_YELLOW" "$*"; }
 error() { log "ERROR" "$CLR_RED" "$*"; }
 debug() { [[ "$DEBUG" == true ]] && log "DEBUG" "$CLR_BLUE" "$*"; }
 
-
-# ==============================  
+# ==============================
 # Command Wrappers
-# ==============================  
+# ==============================
 
 # Dry-run global flag (set in install.sh)
 : "${DRY_RUN:=false}"
@@ -62,10 +61,9 @@ run_sudo() {
     fi
 }
 
-
-# ==============================  
+# ==============================
 # Prompt and Input Handling
-# ==============================  
+# ==============================
 
 # Simple yes/no confirmation
 confirm() {
@@ -79,20 +77,127 @@ pause() {
     read -rp "Press Enter to continue..."
 }
 
-# Prompt for input with default value
+# Prompt for input (no default)
 prompt() {
+    local var_name="$1"
+    local prompt_text="$2"
+
+    read -rp "$prompt_text: " input
+    eval "$var_name=\"\$input\""
+}
+
+# Prompt for input with a default value
+prompt_default() {
     local var_name="$1"
     local prompt_text="$2"
     local default_value="$3"
 
     read -rp "$prompt_text [${default_value}]: " input
+    # If the user pressed Enter, use the default
     eval "$var_name=\"\${input:-$default_value}\""
 }
 
+validate_username() {
+    local username="$1"
 
-# ==============================  
+    # Reject "root" explicitly
+    if [[ "$username" == "root" ]]; then
+        return 1
+    fi
+
+    # POSIX-compliant username pattern
+    # Must start with lowercase letter or underscore
+    # Followed by up to 31 lowercase letters, digits, underscores, or hyphens
+    if [[ ! "$username" =~ ^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$ ]]; then
+        return 1
+    fi
+
+    return 0
+}
+
+validate_hostname() {
+    local hostname="$1"
+
+    # Empty hostname is invalid
+    [[ -z "$hostname" ]] && return 1
+
+    # Must not be "localhost"
+    if [[ "$hostname" == "localhost" ]]; then
+        return 1
+    fi
+
+    # RFC 1123-compliant pattern:
+    #   - letters, digits, hyphens allowed
+    #   - cannot start or end with a hyphen
+    #   - labels separated by dots
+    if [[ ! "$hostname" =~ ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])$ ]]; then
+        return 1
+    fi
+
+    # Total length check
+    if ((${#hostname} > 253)); then
+        return 1
+    fi
+
+    return 0
+}
+
+validate_timezone() {
+    local timezone="$1"
+
+    if [ -f "/usr/share/zoneinfo/$1" ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+validate_locale() {
+    local locale="$1"
+
+    if grep -q "$locale" "/etc/locale.gen"; then
+        return 0
+    fi
+
+    return 1
+}
+
+validate_install_type() {
+    local type="$1"
+
+    case "$type" in
+    drive | partition)
+        return 0
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+}
+
+validate_partition() {
+    local location="$1"
+
+    if lsblk -o NAME --filter 'TYPE == "part"' | grep -qx "$location"; then
+        return 0
+    fi
+
+    return 1
+}
+
+validate_drive() {
+    local location="$1"
+
+    if lsblk -o NAME --filter 'TYPE == "disk"' | grep -qx "$location"; then
+        return 0
+    fi
+
+    return 1
+}
+
+# ==============================
 # File and Path Utilities
-# ==============================  
+# ==============================
 
 # Ensure directory exists
 ensure_dir() {
@@ -120,9 +225,9 @@ append_if_missing() {
     grep -Fxq "$line" "$file" 2>/dev/null || echo "$line" | run tee -a "$file" >/dev/null
 }
 
-# ==============================  
+# ==============================
 # System Checks and Validation
-# ==============================  
+# ==============================
 
 # Ensure script is run as root (or check sudo available)
 require_root() {
@@ -145,17 +250,17 @@ require_cmd() {
     done
 }
 
-
-# ==============================  
+# ==============================
 # Error Handling, Exiting, and Traps
-# ==============================  
+# ==============================
 
 # Trap handler
 cleanup() {
     local status="${1:-success}"
 
     info "Starting cleanup process (mode: $status)..."
-    sync; sleep 2
+    sync
+    sleep 2
 
     # Unmount order (reverse)
     if mountpoint -q /mnt/boot/efi; then
@@ -186,17 +291,14 @@ cleanup() {
     [[ -d /mnt ]] && info "Syncing final state..." && run_sudo sync
 
     case "$status" in
-        success)
-            info "Cleanup complete. Installation finished successfully."
-            ;;
-        error)
-            warn "Cleanup complete after error. Manual verification recommended."
-            ;;
+    success)
+        info "Cleanup complete. Installation finished successfully."
+        ;;
+    error)
+        warn "Cleanup complete after error. Manual verification recommended."
+        ;;
     esac
 }
-
-trap 'cleanup error' ERR
-trap 'cleanup success' EXIT
 
 # Graceful exit with message
 fail() {
@@ -206,14 +308,16 @@ fail() {
 
 # Retry logic for unstable commands
 retry() {
-    local attempts="$1"; shift
-    local delay="${2:-3}"; shift
+    local attempts="$1"
+    shift
+    local delay="${2:-3}"
+    shift
     local cmd=("$@")
     local count=0
 
     until "${cmd[@]}"; do
         ((count++))
-        if (( count >= attempts )); then
+        if ((count >= attempts)); then
             error "Command failed after $count attempts: ${cmd[*]}"
             return 1
         fi
@@ -221,4 +325,3 @@ retry() {
         sleep "$delay"
     done
 }
-
