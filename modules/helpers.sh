@@ -268,6 +268,10 @@ require_cmd() {
 cleanup() {
     local status="${1:-success}"
 
+    # Remove traps
+    trap "" EXIT
+    trap "" ERR
+
     info "Starting cleanup process (mode: $status)..."
     sync
     sleep 2
