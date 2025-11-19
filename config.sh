@@ -10,6 +10,7 @@
 # 1. USER CONFIGURATION VARIABLES
 # ───────────────────────────────
 USERNAME=""
+PASSWORD=""
 HOSTNAME=""
 TIMEZONE=""
 LOCALE=""
@@ -70,6 +71,26 @@ setup_config() {
         fi
 
         warn "Bad username, please try again"
+    done
+
+    while true; do
+        prompt_silent "PASSWORD" "Enter your password (will also be root password)"
+
+        if [[ ! -n "$PASSWORD" ]]; then
+            warn "Password must not be empty, please try again"
+            continue
+        fi
+
+        local first_password="$PASSWORD"
+
+        prompt_silent "PASSWORD" "Confirm your password"
+
+        if [ "$first_password" != "$PASSWORD" ]; then
+            warn "Passwords must match, please try again"
+            continue
+        fi
+
+        break
     done
 
     while true; do
