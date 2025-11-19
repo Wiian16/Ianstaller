@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-module_01() {
+module_05() {
     return 1
 }
