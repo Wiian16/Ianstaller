@@ -1,0 +1,6 @@
+# ─────────────────────────────
+# GENERAL DESKTOP AUR APPLICATIONS
+# ─────────────────────────────
+# Core user applications for daily productivity, media, and general use.
+
+zoom                    # Video conferencing client

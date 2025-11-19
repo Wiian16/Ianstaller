@@ -1,0 +1,8 @@
+# ─────────────────────────────
+# DEVELOPMENT ENVIRONMENT AUR PACKAGES
+# ─────────────────────────────
+# Programming tools, editors, SDKs, and developer-quality-of-life utilities.
+
+visual-studio-code-bin  # Microsoft VS Code (binary)
+vscodium                # VS Code open-source release w/o tellemetry
+nvim-lazy               # Lazy.nvim package manager

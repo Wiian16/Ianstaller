@@ -1,0 +1,12 @@
+# ────────────────────────────────
+# DESKTOP ENVIRONMENT AUR PACKAGES
+# ────────────────────────────────
+# AUR Packages for X11 + bspwm setup
+
+ksuperkey               # Allows Super key to launch Rofi
+xfce-polkit             # Authentication agent for permissions in Thunar, etc.
+python-pywal            # Generate color schemes from wallpapers
+nordic-darker-theme     # GTK theme (dark variant)
+i3lock-color            # Customizable lock screen base
+i3lock-fancy-rapid-git  # Lock screen with blur and animation
+qt5-styleplugins        # Apply GTK theme to Qt5 applications
