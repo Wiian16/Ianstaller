@@ -18,18 +18,18 @@ Set up the installer's structure, shared utilities, and configuration handling.
 
 - [x] Create project structure
     - `ianstaller/` root with `/modules`, `/docs`
-- [ ] Write `config.sh`
+- [x] Write `config.sh`
     - Define username, hostname, drive, filesystem options, package groups
     - Include per-profile configs (desktop / dev / gaming)
 - [x] Write `helpers.sh`
     - Logging functions (`info()`, `warn()` `error()`)
     - Prompt utilities (`confirm()`, `pause()`)
     - Execution wrappers with error handling
-- [ ] Write main runner (`install.sh`)
+- [x] Write main runner (`install.sh`)
     - Parse main arguments (`--dry-run`, `--skip <module>`)
     - Source `config.sh` and each module sequentially
     - Log to `ianstaller.log`
-- [ ] Add dry-run mode
+- [x] Add dry-run mode
     - Replace destructive commands with `echo` when `DRY_RUN=true`
 - [ ] Add a laptop toggle for laptop-specific packages and configs
 
@@ -105,17 +105,17 @@ Install tools for workflows -- development and gaming
 
 Add the features that make the system safe to use long-term and easy to maintain.
 
-- [ ] Add dry-run mode (expanded) 
+- [x] Add dry-run mode (expanded) 
     - Implement global toggle in `install.sh`
     - Log all commands and skip execution safely
-- [ ] Add confirmation for destructive actions
+- [x] Add confirmation for destructive actions
     - Require double confirmation for partitioning or formatting
     - Add `--no-confirm` option for unattended installs
 - [ ] Add rollback/snapshot support
     - Automatically create Btrfs snapshot pre/post install
-- [ ] Add module skipping
+- [x] Add module skipping
     - Allow `--skip desktop` or `--skip gaming` for minimal installs
-- [ ] Add logging and failure recovery
+- [x] Add logging and failure recovery
     - Centralize all logs in `ianstaller.sh`
     - Add `trap` for cleanup on failure
 - [ ] Write documentation
