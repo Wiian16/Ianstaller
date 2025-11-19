@@ -86,6 +86,16 @@ prompt() {
     eval "$var_name=\"\$input\""
 }
 
+# Prompt for input without echoing characters (no default)
+prompt_silent() {
+    local var_name="$1"
+    local prompt_text="$2"
+
+    read -rsp "$prompt_text: " input
+    echo
+    eval "$var_name=\"\$input\""
+}
+
 # Prompt for input with a default value
 prompt_default() {
     local var_name="$1"
