@@ -141,6 +141,10 @@ prompt_install_location() {
         prompt_install_drive
         ;;
     partition)
+        if [ $(lsblk -o TYPE | grep "part" | wc -l) -le 0 ]; then
+            error "No parittions detected, select 'drive' install type or create a partition and try again"
+            false # Start error cleanup process then exit
+        fi
         prompt_install_partition
         ;;
     *)
