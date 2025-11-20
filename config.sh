@@ -198,7 +198,7 @@ list_disks() {
 validate_config() {
     local missing=()
 
-    for var in USERNAME HOSTNAME TIMEZONE LOCALE INSTALL_LOCATION INSTALL_TYPE; do
+    for var in USERNAME PASSWORD HOSTNAME TIMEZONE LOCALE INSTALL_LOCATION INSTALL_TYPE; do
         [[ -z "${!var}" ]] && missing+=("$var")
     done
 
