@@ -27,6 +27,7 @@ log() {
     shift
     local message="$*"
     echo -e "${color}[$(timestamp)] [$level]${CLR_RESET} $message"
+    echo -e "[$(timestamp)] [$level] $message" >>$LOG_FILE
 }
 
 # Log levels
