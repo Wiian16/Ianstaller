@@ -31,22 +31,22 @@ Set up the installer's structure, shared utilities, and configuration handling.
     - Log to `ianstaller.log`
 - [x] Add dry-run mode
     - Replace destructive commands with `echo` when `DRY_RUN=true`
-- [ ] Add a laptop toggle for laptop-specific packages and configs
+- [x] Add a laptop toggle for laptop-specific packages and configs
 
 ## 2. Core Installation Pipeline
 
 Automate the reproducible base Arch installation using Btrfs
 
-- [ ] Module 00: Partitioning
+- [x] Module 00: Partitioning
     - Detect disks and confirm before formatting 
     - Create GPT with EFI + Btrfs partitions
+    - Format partition with `mkfs.btrfs`
+    - Mount subvolumes correctly under `/mnt`
     - Optionally support USB installs
 - [ ] Module 01: Btrfs setup
-    - Format partition with `mkfs.btrfs`
     - Create subvolumes: `@`, `@home`, `@log`, `@snapshots`, etc.
     - Document layout in `docs/btrfs-layout.md`
-- [ ] Module 02: Mount and base install
-    - Mount subvolumes correctly under `/mnt`
+- [ ] Module 02: Base install
     - Install base packages with `pacstrap`
     - Generate `fstab` and copy `config.sh` into chroot
 - [ ] Module 03: Chroot configuration
