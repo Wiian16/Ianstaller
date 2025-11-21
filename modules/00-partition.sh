@@ -47,8 +47,24 @@ partition_disk() {
 }
 
 partition_part() {
-    error "Function not implemented yet"
-    return 1
+    warn "Beginning partition format, this will erase ALL data on the partition"
+
+    if ! confirm; then
+        exit
+    fi
+
+    info "Formatting partition"
+
+    local part_location="/dev/${INSTALL_LOCATION}"
+
+    # Format partition
+    run mkfs.btrfs -f "$part_location"
+
+    info "Mounting partition"
+
+    run ensure_dir /mnt
+
+    run mount "$part_location" /mnt
 }
 
 module_00() {
