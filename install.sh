@@ -11,7 +11,7 @@ source ./modules/helpers.sh
 
 # Source all modules
 source ./modules/00-partition.sh
-source ./modules/01-mount.sh
+source ./modules/01-btrs.sh
 source ./modules/02-base.sh
 source ./modules/03-chroot.sh
 source ./modules/04-desktop.sh
