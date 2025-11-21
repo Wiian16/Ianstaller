@@ -37,13 +37,8 @@ partition_disk() {
     # TODO: may not need to format btrfs, seems to be done by parted (added -f flag to avoid error)
     run mkfs.btrfs -f "$root_partition"
 
-    # Mount partitions
-    info "Mounting partitions"
-
-    run ensure_dir /mnt/boot/efi
-
-    run mount "$root_partition" /mnt
-    run mount "$efi_partition" /mnt/boot/efi
+    ROOT_PARTITION=$root_partition
+    EFI_PARTITION=$efi_partition
 }
 
 partition_part() {
@@ -65,6 +60,8 @@ partition_part() {
     run ensure_dir /mnt
 
     run mount "$part_location" /mnt
+
+    ROOT_PARTITION=$part_location
 }
 
 module_00() {
