@@ -43,8 +43,8 @@ Automate the reproducible base Arch installation using Btrfs
     - Format partition with `mkfs.btrfs`
     - Mount subvolumes correctly under `/mnt`
     - Optionally support USB installs
-- [ ] Module 01: Btrfs setup
-    - Create subvolumes: `@`, `@home`, `@log`, `@snapshots`, etc.
+- [x] Module 01: Btrfs setup
+    - Create subvolumes: `@`, `@home`, `@var_log`, `@snapshots`, etc.
     - Document layout in `docs/btrfs-layout.md`
 - [ ] Module 02: Base install
     - Install base packages with `pacstrap`
