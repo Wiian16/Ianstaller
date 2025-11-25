@@ -33,7 +33,7 @@ ENABLE_LAPTOP=true
 read_package_list() {
     local file="$1"
     if [[ -f "$file" ]]; then
-        grep -vE '^\s*(#|$)' "$file"
+        sed -e 's/#.*$//' -e '/^$/d' $file
     else
         error "Package file not found: $file"
         return 1
