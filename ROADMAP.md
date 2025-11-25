@@ -54,31 +54,32 @@ Automate the reproducible base Arch installation using Btrfs
     - Configure initramfs for Btrfs
     - Install bootloader (GRUB)
     - Set up networking and create user
+    - Configure sudoers (`wheel` group)
 
 ## 3. System Configuration
 
 Make the base system functional post-install (core services, updates, defaults)
 
-- [ ] Enable services: `NetworkManager`, `bluetooth`, `systemd-timesyncd`
-- [ ] Configure sudoers (`wheel` group)
-- [ ] Configure shell (oh my zsh)
-- [ ] Add basic system aliases and scripts
-- [ ] Install essential command-line tools (from `PACKAGES_CORE`)
-- [ ] Setup microcode and drivers (AMD/Intel/NVIDIA)
-- [ ] Optionally install Flatpak and basic repos
-- [ ] Pacman hooks and systemd timers
-    - Pre/post snapshots for pacman, pacman/yay cache timers, reflector timers, etc.
-- [ ] Pacman parallel downloads. 
+- [ ] Module 04: System
+    - Enable services: `NetworkManager`, `bluetooth`, `systemd-timesyncd`
+    - Configure shell (oh my zsh)
+    - Add basic system aliases and scripts
+    - Install essential command-line tools (from `PACKAGES_CORE`)
+    - Setup microcode and drivers (AMD/Intel/NVIDIA)
+    - Install and configure yay
+    - Pacman hooks and systemd timers
+        - Pre/post snapshots for pacman, pacman/yay cache timers, reflector timers, etc.
+    - Pacman parallel downloads. 
 
 ## 4. User Environment (Desktop and Dotfiles)
 
 Build the bspwm-based desktop environment and integrate dotfiles
 
-- [ ] Module 04: Desktop
+- [ ] Module 05: Desktop
     - Install Xorg, bspwm, sxhkd, polybar, picom, dunst, alacritty, etc. 
     - Configure display manager (`sddm`)
     - Set default session for user
-- [ ] Module 05: Dotfiles
+- [ ] Module 06: Dotfiles
     - Install `git` and `chezmoi` or `yadm`
     - Pull dotfiles from repo
     - Apply templates for machine-specific configs (e.g. desktop vs USB)
@@ -89,12 +90,12 @@ Build the bspwm-based desktop environment and integrate dotfiles
 
 Install tools for workflows -- development and gaming
 
-- [ ] Module 06: Developer tools
+- [ ] Module 07: Developer tools
     - Install compilers, SDKs and editors (Rust, Go, Python, Neovim, etc.)
     - Configure Git, SSH keys, and global `.gitconfig`
     - Set environment variables and aliases
     - Setup virtualisation (virt-manager and UFW rules)
-- [ ] Module 07: Gaming
+- [ ] Module 08: Gaming
     - Detect GPU and install appropriate driver stack
     - Install Steam, Lutris(?), MangoHud, Gamemode, and 32-bit libraries
     - Apply steam tweaks for performance (e.g. `sysctl`, I/O schedulers)
