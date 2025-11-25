@@ -48,7 +48,7 @@ run() {
         info "[DRY-RUN] $*"
     else
         info "Running: $*"
-        "$@" || error "Command failed: $*"
+        "$@" || (error "Command failed: $*" && return 1)
     fi
 }
 
@@ -58,7 +58,7 @@ run_sudo() {
         info "[DRY-RUN] sudo $*"
     else
         info "sudo $*"
-        sudo "$@" || error "Command failed (sudo): $*"
+        sudo "$@" || (error "Command failed (sudo): $*" && return 1)
     fi
 }
 
