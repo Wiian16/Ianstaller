@@ -10,6 +10,12 @@ base                # Core Arch Linux base system (kernel, pacman, etc.)
 linux               # Latest Linux kernel
 linux-firmware      # Official firmware for CPUs, GPUs, and network devices
 
+# System utilities
+grub                # GNU GRUB bootloader
+efibootmgr          # Manage efi boot entries
+os-prober           # Detect installed operating systems
+sudo                # Privilege escalation
+
 # Documentation and help
 man                 # View command documentation (man pages)
 man-pages           # Additional man page documentation
