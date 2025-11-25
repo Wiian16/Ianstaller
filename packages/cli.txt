@@ -1,7 +1,7 @@
 # ─────────────────────────────
 # CLI PACKAGES 
 # ─────────────────────────────
-# Extra tools to make cli work easier
+# Extra quality of life and non-essential CLI tools
 
 zoxide              # Smart directory jumping (cd replacement)
 sl                  # ...you typed 'ls' wrong
