@@ -62,6 +62,11 @@ run_sudo() {
     fi
 }
 
+# Run in chroot
+run_chroot() {
+    run arch-chroot /mnt "$@"
+}
+
 # ==============================
 # Prompt and Input Handling
 # ==============================
