@@ -28,6 +28,8 @@ module_03() {
     # Setup regular user password and sudo access
     run_chroot useradd -mG wheel $USERNAME
     run_chroot bash -c "echo '$USERNAME:$PASSWORD' | chpasswd"
+    # Give sudo access to wheel group
+    append_if_missing "%wheel      ALL=(ALL:ALL) ALL" /mnt/etc/sudoers
 
     # Install grub (only for drive installs)
     if [[ "$INSTALL_TYPE" == "drive" ]]; then
