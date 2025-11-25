@@ -315,26 +315,6 @@ cleanup() {
     sync
     sleep 2
 
-    # Unmount order (reverse)
-    if mountpoint -q /mnt/boot/efi; then
-        info "Unmounting EFI..."
-        run_sudo umount /mnt/boot/efi || warn "Failed to unmount EFI"
-    fi
-
-    if mountpoint -q /mnt/lib/modules; then
-        info "Unmounting /lib/modules..."
-        run_sudo umount /mnt/lib/modules || warn "Failed to unmount modules"
-    fi
-
-    if grep -q "/mnt" /proc/swaps; then
-        info "Disabling swap..."
-        run_sudo swapoff /mnt/swapfile || warn "Failed to disable swap"
-    fi
-
-    info "Killing processes using /mnt..."
-    run_sudo fuser -km /mnt || true
-    sleep 1
-
     if mountpoint -q /mnt; then
         info "Unmounting root mount..."
         run_sudo umount -R /mnt || warn "Failed to unmount /mnt"
