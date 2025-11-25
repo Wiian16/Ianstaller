@@ -18,14 +18,9 @@ ffmpeg              # Command-line video/audio processor
 obs-studio          # Screen recording and streaming
 viewnior            # Lightweight image viewer (duplicate but useful)
 atril               # PDF and document viewer
+gparted             # GUI partition manager
 
 # Productivity
 libreoffice-fresh   # Office suite (Writer, Calc, Impress, etc.)
 bitwarden           # Password manager
 obsidian            # Markdown-based note-taking app
-samba               # SMB network share utilities
-
-# Quality-of-Life CLI Tools
-zoxide              # Smart directory jumping (cd replacement)
-sl                  # ...you typed 'ls' wrong
-

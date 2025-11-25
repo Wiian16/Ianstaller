@@ -1,0 +1,5 @@
+# ─────────────────────────────
+# LAPTOP-SPECIFIC AUR PACKAGES
+# ─────────────────────────────
+
+backlight_control   # AUR: fine-grained brightness control utility

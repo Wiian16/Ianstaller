@@ -1,0 +1,14 @@
+# ─────────────────────────────
+# CLI PACKAGES 
+# ─────────────────────────────
+# Extra tools to make cli work easier
+
+zoxide              # Smart directory jumping (cd replacement)
+sl                  # ...you typed 'ls' wrong
+samba               # SMB network share utilities
+gdu                 # Disk usage analyzer (faster than du)
+ranger              # Terminal file manager
+fzf                 # Fuzzy finder for interactive searches
+fastfetch           # System info summary tool
+btop                # Overall system performance
+pciutils            # Information about connected devices
