@@ -46,10 +46,10 @@ Automate the reproducible base Arch installation using Btrfs
 - [x] Module 01: Btrfs setup
     - Create subvolumes: `@`, `@home`, `@var_log`, `@snapshots`, etc.
     - Document layout in `docs/btrfs-layout.md`
-- [ ] Module 02: Base install
+- [x] Module 02: Base install
     - Install base packages with `pacstrap`
-    - Generate `fstab` and copy `config.sh` into chroot
-- [ ] Module 03: Chroot configuration
+    - Generate `fstab` 
+- [x] Module 03: Chroot configuration
     - Set timezone, locale, hostname
     - Configure initramfs for Btrfs
     - Install bootloader (GRUB)
