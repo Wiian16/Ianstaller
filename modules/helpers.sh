@@ -238,7 +238,40 @@ backup_file() {
 append_if_missing() {
     local line="$1"
     local file="$2"
-    grep -Fxq "$line" "$file" 2>/dev/null || echo "$line" | run tee -a "$file" >/dev/null
+
+    if [[ "$DRY_RUN" == true ]]; then
+        info "[DRY-RUN] Appending text to $file if missing: $line"
+    else
+        info "Appending text to $file if missing: $line"
+        grep -Fxq "$line" "$file" 2>/dev/null || echo "$line" | tee -a "$file" >/dev/null
+    fi
+
+}
+
+# Append some text to a file, adding to the end of existing data
+append_text() {
+    local text="$1"
+    local file="$2"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        info "[DRY-RUN] Writing text to $file: $text"
+    else
+        info "Writing text to $file: $text"
+        echo "$text" | tee -a "$file" >/dev/null
+    fi
+}
+
+# Write some text to a file, overwriting existing data
+write_text() {
+    local line="$1"
+    local file="$2"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        info "[DRY-RUN] Writing text to $file"
+    else
+        info "Writing text to $file"
+        echo "$line" | tee "$file" >/dev/null
+    fi
 }
 
 # ==============================
