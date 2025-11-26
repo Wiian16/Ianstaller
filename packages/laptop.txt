@@ -22,7 +22,6 @@ gnome-settings-daemon # Provides touchpad and keyboard settings integration
 # Display / Backlight Control
 brightnessctl       # Control screen brightness via sysfs interface
 light               # Simple alternative to brightnessctl
-backlight_control   # AUR: fine-grained brightness control utility
 
 # Networking and Mobility
 networkmanager      # Network management daemon (Wi-Fi, Ethernet, etc.)

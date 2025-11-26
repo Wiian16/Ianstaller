@@ -30,19 +30,14 @@ bc                  # Command-line calculator
 jq                  # JSON processor for scripts
 sed                 # Stream editor for text manipulation
 unzip               # Extract ZIP archives
-gdu                 # Disk usage analyzer (faster than du)
 
 # Shell tools & text editors
 vi                  # Basic text editor (vi clone)
 vim                 # More fully-featured text editor
 neovim              # Modern Vim-compatible editor
-ranger              # Terminal file manager
-fzf                 # Fuzzy finder for interactive searches
-fastfetch           # System info summary tool
 
 # System monitoring
 htop                # Interactive process viewer
-btop                # Overall system performance
 
 # Fonts (general + CJK + emoji)
 ttf-dejavu          # Common serif/sans/mono font family
@@ -60,7 +55,6 @@ xapp                # Common desktop utilities (icons, dialogs)
 # System integration
 gvfs                # Virtual filesystem support (trash, remote mounts)
 udiskie             # Automount USB drives and external disks
-gparted             # GUI partition manager
 libsecret           # Secret storage API (used by password managers)
 gnome-keyring       # Backend keyring service for password storage
 
