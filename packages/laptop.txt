@@ -28,9 +28,5 @@ networkmanager      # Network management daemon (Wi-Fi, Ethernet, etc.)
 network-manager-applet # System tray applet for NetworkManager
 
 # Quality-of-life Laptop Utilities
-bluez               # Bluetooth protocol stack
-bluez-utils         # CLI utilities for Bluetooth
-rfkill              # Enable/disable wireless devices
-nm-connection-editor # GUI for managing network connections
 thermald            # Intel thermal management daemon
 

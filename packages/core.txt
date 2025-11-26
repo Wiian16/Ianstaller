@@ -17,6 +17,10 @@ os-prober           # Detect installed operating systems
 sudo                # Privilege escalation
 networkmanager      # Network configuration tool
 ufw                 # Firewall configuration
+bluez               # Linux bluetooth stack
+bluez-utils         # Provides bluetoothctl utility
+rfkill              # Enable/disable wireless devices
+nm-connection-editor # GUI for managing network connections
 
 # Documentation and help
 man                 # View command documentation (man pages)
