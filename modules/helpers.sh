@@ -43,23 +43,78 @@ debug() { [[ "$DEBUG" == true ]] && log "DEBUG" "$CLR_BLUE" "$*"; }
 # Dry-run global flag (set in install.sh)
 : "${DRY_RUN:=false}"
 
+# Initialize command output global
+COMMAND_OUTPUT=""
+
 run() {
     if [[ "$DRY_RUN" == true ]]; then
         info "[DRY-RUN] $*"
-    else
-        info "Running: $*"
-        "$@" || (error "Command failed: $*" && return 1)
+        return 0
     fi
+
+    info "Running: $*"
+
+    # Temporarily disable `set -e`
+    set +e
+
+    local tmp
+    tmp=$(mktemp)
+
+    # Run command
+    "$@" 2>&1 | tee "$tmp"
+    local cmd_status=${PIPESTATUS[0]}
+
+    # Restore `set -e`
+    set -e
+
+    # Store output
+    COMMAND_OUTPUT=$(<"$tmp")
+    rm -f "$tmp"
+
+    printf "%s\n" "$COMMAND_OUTPUT" >>"$LOG_FILE"
+
+    if ((cmd_status != 0)); then
+        error "Command failed ($cmd_status): $*"
+        return "$cmd_status"
+    fi
+
+    return 0
 }
 
 # Run as root
 run_sudo() {
     if [[ "$DRY_RUN" == true ]]; then
         info "[DRY-RUN] sudo $*"
-    else
-        info "sudo $*"
-        sudo "$@" || (error "Command failed (sudo): $*" && return 1)
+        return 0
     fi
+
+    info "Running: sudo $*"
+
+    # Temporarily disable `set -e`
+    set +e
+
+    local tmp
+    tmp=$(mktemp)
+
+    # Run command
+    sudo "$@" 2>&1 | tee "$tmp"
+    local cmd_status=${PIPESTATUS[0]}
+
+    # Restore `set -e`
+    set -e
+
+    # Store output
+    COMMAND_OUTPUT=$(<"$tmp")
+    rm -f "$tmp"
+
+    printf "%s\n" "$COMMAND_OUTPUT" >>"$LOG_FILE"
+
+    if ((cmd_status != 0)); then
+        error "Command failed ($cmd_status): $*"
+        return "$cmd_status"
+    fi
+
+    return 0
 }
 
 # Run in chroot
