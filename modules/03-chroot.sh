@@ -49,7 +49,7 @@ module_03() {
 
         if ! run_chroot efibootmgr -v | grep -q "GRUB"; then
             warn "Creating UEFI boot entry for GRUB"
-            arch-chroot /mnt efibootmgr --create --disk /dev/"$DEVICE" --part 1 --label "GRUB" --loader /EFI/GRUB/grubx64.efi
+            run_chroot efibootmgr --create --disk /dev/"$INSTALL_LOCATION" --part 1 --label "GRUB" --loader /EFI/GRUB/grubx64.efi
         fi
     else
         info "Skipping bootloading installation for partition install"
