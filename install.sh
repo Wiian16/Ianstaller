@@ -14,12 +14,13 @@ source ./modules/00-partition.sh
 source ./modules/01-btrfs.sh
 source ./modules/02-base.sh
 source ./modules/03-chroot.sh
-source ./modules/04-desktop.sh
-source ./modules/05-dotfiles.sh
-source ./modules/06-devtools.sh
-source ./modules/07-gaming.sh
-source ./modules/08-laptop.sh
-source ./modules/09-postinstall.sh
+source ./modules/04-system.sh
+source ./modules/05-desktop.sh
+source ./modules/06-dotfiles.sh
+source ./modules/07-devtools.sh
+source ./modules/08-gaming.sh
+source ./modules/09-laptop.sh
+source ./modules/10-postinstall.sh
 
 # ───────────────────────────────
 # USAGE AND HELP
@@ -130,44 +131,47 @@ main() {
     # Chroot
     info "Running Module 03: Chroot"
     module_03
+    # SYstem
+    info "Running Module 04: System"
+    module_04
     # Desktop
     if $ENABLE_DESKTOP; then
-        info "Running Module 04: Desktop"
-        module_04
+        info "Running Module 05: Desktop"
+        module_05
     else
-        warn "Skipping Module 04: Desktop"
+        warn "Skipping Module 05: Desktop"
     fi
     # Dotfiles
     if $ENABLE_DOTFILES; then
         info "Running Module 05: Dotfiles"
-        module_05
+        module_06
     else
-        warn "Skipping Module 05: Dotfiles"
+        warn "Skipping Module 06: Dotfiles"
     fi
     # Devtools
     if $ENABLE_DEV; then
-        info "Running Module 06: Devtools"
-        module_06
+        info "Running Module 07: Devtools"
+        module_07
     else
-        warn "Skipping Module 06: Devtools"
+        warn "Skipping Module 07: Devtools"
     fi
     # Gaming
     if $ENABLE_GAMING; then
-        info "Running Module 07: Gaming"
-        module_07
+        info "Running Module 08: Gaming"
+        module_08
     else
-        warn "Skipping Module 07: Gaming"
+        warn "Skipping Module 08: Gaming"
     fi
     # Laptop
     if $ENABLE_LAPTOP; then
-        info "Running Module 08: Laptop"
-        module_08
+        info "Running Module 09: Laptop"
+        module_09
     else
-        warn "Skipping Module 08: Laptop"
+        warn "Skipping Module 09: Laptop"
     fi
     # Postinstall
-    info "Running Module 09: Postinstall"
-    module_09
+    info "Running Module 10: Postinstall"
+    module_10
 }
 
 main "$@"
