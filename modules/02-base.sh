@@ -7,5 +7,7 @@ module_02() {
 
     # Generate fstab entries
     info "Generating fstab entries"
-    run genfstab -U /mnt >>/mnt/etc/fstab
+    run genfstab -U /mnt
+    local fstab_text=$COMMAND_OUTPUT
+    append_text "$fstab_text" /mnt/etc/fstab
 }
