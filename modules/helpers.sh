@@ -318,14 +318,14 @@ append_text() {
 
 # Write some text to a file, overwriting existing data
 write_text() {
-    local line="$1"
+    local text="$1"
     local file="$2"
 
     if [[ "$DRY_RUN" == true ]]; then
-        info "[DRY-RUN] Writing text to $file"
+        info "[DRY-RUN] Writing text to $file: $text"
     else
         info "Writing text to $file"
-        echo "$line" | tee "$file" >/dev/null
+        echo "$text" | tee "$file" >/dev/null
     fi
 }
 
