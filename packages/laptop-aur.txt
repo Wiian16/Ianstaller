@@ -2,6 +2,5 @@
 # LAPTOP-SPECIFIC AUR PACKAGES
 # ─────────────────────────────
 
-backlight_control   # AUR: fine-grained brightness control utility
 auto-cpufreq        # Dynamically scale CPU frequency for power savings
 light               # Simple alternative to brightnessctl
