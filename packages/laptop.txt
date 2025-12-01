@@ -11,17 +11,15 @@ tlp-rdw             # Radio device switching (Wi-Fi/Bluetooth) for TLP
 powertop            # Measure and tune power usage
 acpi                # Display battery and AC adapter info
 upower              # D-Bus interface for power devices (used by GUIs)
-auto-cpufreq        # Dynamically scale CPU frequency for power savings
 
 # Touchpad and Input
 libinput            # Input driver for touchpads, mice, etc.
 xf86-input-libinput # Xorg driver for libinput
-xinput              # CLI tool to configure input devices
+xorg-xinput         # CLI tool to configure input devices
 gnome-settings-daemon # Provides touchpad and keyboard settings integration
 
 # Display / Backlight Control
 brightnessctl       # Control screen brightness via sysfs interface
-light               # Simple alternative to brightnessctl
 
 # Networking and Mobility
 networkmanager      # Network management daemon (Wi-Fi, Ethernet, etc.)
