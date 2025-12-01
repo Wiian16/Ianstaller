@@ -15,7 +15,7 @@ module_03() {
     run_chroot locale-gen
 
     # Set device hostname
-    run_chroot bash -c 'echo "$HOSTNAME" >/etc/hostname'
+    write_text "$HOSTNAME" /mnt/etc/hostname
 
     # Setup hosts
     append_if_missing "127.0.0.1 localhost" /mnt/etc/hosts
