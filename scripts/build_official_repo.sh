@@ -29,10 +29,10 @@ printf '  - %s\n' "${pkg_files[@]}"
 packages=()
 for f in "${pkg_files[@]}"; do
     while IFS= read -r line; do
-        line="${line%%#*}"  # remove comments
-        line="$(echo "$line" | xargs)"  # trim whitespace
+        line="${line%%#*}"             # remove comments
+        line="$(echo "$line" | xargs)" # trim whitespace
         [[ -n "$line" ]] && packages+=("$line")
-    done < "$f"
+    done <"$f"
 done
 
 # Deduplicate
@@ -56,6 +56,7 @@ echo "Sample: ${uniq_pkgs[@]:0:10}"
 # Create directories
 sudo mkdir -p "$REPO_DIR" "$CACHE_DIR"
 sudo chown root:root "$CACHE_DIR"
+sudo chown "$USER":"$USER" "$REPO_DIR"
 sudo chmod 755 "$CACHE_DIR"
 
 echo "[+] Downloading packages into cache (pacman -Sw)..."
@@ -63,7 +64,7 @@ sudo pacman -Sw --cachedir "$CACHE_DIR" --noconfirm "${uniq_pkgs[@]}"
 
 # Collect downloaded packages
 shopt -s nullglob
-pkg_files_on_disk=( "$CACHE_DIR"/*.pkg.tar.* )
+pkg_files_on_disk=("$CACHE_DIR"/*.pkg.tar.*)
 
 if [[ ${#pkg_files_on_disk[@]} -eq 0 ]]; then
     echo "ERROR: No downloaded packages in $CACHE_DIR."
