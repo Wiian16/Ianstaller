@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
 
+install_yay() {
+    info "Installing yay AUR helper"
+
+    run pacstrap /mnt base-devel git
+
+    # Create a temporary user to build and install yay with passwordless privilege escalation
+    run_chroot useradd -m -s /bin/bash aurbuild
+    ensure_dir /mnt/etc/sudoers.d
+    write_text "aurbuild ALL=(ALL) NOPASSWD: ALL" /mnt/etc/sudoers.d/aurbuild
+    run_chroot chmod 440 /etc/sudoers.d/aurbuild
+
+    run_chroot su - aurbuild -c '
+cd /tmp
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si --noconfirm
+'
+
+    run rm -f /mnt/etc/sudoers.d/aurbuild
+    run_chroot userdel -r aurbuild
+}
+
 module_04() {
+    install_yay
+
     # optimize pacman and makepkg
     info "Optimizing pacman and makepkg configs"
 
