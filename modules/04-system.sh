@@ -64,7 +64,7 @@ module_04() {
 
     # Run install scripts for regular user and root
     run_chroot sh -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    run_chroot su - wiian -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    run_chroot su - $USERNAME -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
     run_chroot chsh root -s /usr/bin/zsh
     run_chroot chsh $USERNAME -s /usr/bin/zsh
