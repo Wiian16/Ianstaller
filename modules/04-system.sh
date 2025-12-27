@@ -38,9 +38,26 @@ install_intel_drivers() {
 }
 
 install_video_drivers() {
-    info "AMD Drivers: " ${VIDEO_DRIVERS_AMD[@]}
-    info "Intel Drivers: " ${VIDEO_DRIVERS_INTEL[@]}
-    info "NVIDIA Drivers: " ${VIDEO_DRIVERS_NVIDIA[@]}
+    info "Detecting installed graphics cards"
+    local intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "true" || echo "false")
+    local amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "true" || echo "false")
+    local nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "true" || echo "false")
+
+    if [ $nvidia_detected = "true" ]; then
+        install_nvidia_drivers
+    fi
+
+    if [ $amd_detected = "true" ]; then
+        install_amd_drivers
+    fi
+
+    if [ $intel_detected = "true" ]; then
+        install_intel_drivers
+    fi
+
+    if [[ $nvidia_detected = "false" && $amd_detected = "false" && $intel_detected = "false" ]]; then
+        info "No supported graphics cards detected, continuing"
+    fi
 }
 
 module_04() {
