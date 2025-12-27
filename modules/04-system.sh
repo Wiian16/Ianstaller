@@ -22,6 +22,27 @@ makepkg -si --noconfirm
     run_chroot userdel -r aurbuild
 }
 
+install_nvidia_drivers() {
+    error "Nvidia drivers not implemented yet"
+    return 1
+}
+
+install_amd_drivers() {
+    error "AMD drivers not implemented yet"
+    return 1
+}
+
+install_intel_drivers() {
+    error "Intel Drivers not implemented yet"
+    return 1
+}
+
+install_video_drivers() {
+    info "AMD Drivers: " ${VIDEO_DRIVERS_AMD[@]}
+    info "Intel Drivers: " ${VIDEO_DRIVERS_INTEL[@]}
+    info "NVIDIA Drivers: " ${VIDEO_DRIVERS_NVIDIA[@]}
+}
+
 module_04() {
     install_yay
 
@@ -78,4 +99,6 @@ module_04() {
 
     run_chroot chsh root -s /usr/bin/zsh
     run_chroot chsh $USERNAME -s /usr/bin/zsh
+
+    install_video_drivers
 }

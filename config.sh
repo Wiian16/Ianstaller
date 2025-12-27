@@ -46,6 +46,10 @@ PACKAGES_DEV=($(read_package_list "packages/dev.txt"))
 PACKAGES_GAMING=($(read_package_list "packages/gaming.txt"))
 PACKAGES_LAPTOP=($(read_package_list "packages/laptop.txt"))
 
+VIDEO_DRIVERS_AMD=($(read_package_list "packages/video-drivers-amd.txt"))
+VIDEO_DRIVERS_INTEL=($(read_package_list "packages/video-drivers-intel.txt"))
+VIDEO_DRIVERS_NVIDIA=($(read_package_list "packages/video-drivers-nvidia.txt"))
+
 # ───────────────────────────────
 # 4. DOTFILES CONFIGURATION
 # ───────────────────────────────
