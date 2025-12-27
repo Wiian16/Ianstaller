@@ -49,6 +49,16 @@ module_04() {
     info "Enabling services"
     run_chroot systemctl enable NetworkManager.service
     run_chroot systemctl enable systemd-timesyncd.service # Time synchronization
+    run_chroot systemctl enable bluetooth.service
+
+    # Udiskie custom service
+    ensure_dir /mnt/home/$USERNAME/.config/systemd/user
+
+    run cp ./resources/udiskie.service /mnt/home/$USERNAME/.config/systemd/user/udiskie.service
+
+    # Manually enable user systemd service
+    ensure_dir /mnt/home/$USERNAME/.config/systemd/user/default.target.wants
+    run ln -sf /mnt/home/$USERNAME/.config/systemd/user/udiskie.service /mnt/home/$USERNAME/.config/systemd/user/default.target.wants/udiskie.service
 
     # Configure UFW
     info "Configuring and enabling UFW"
