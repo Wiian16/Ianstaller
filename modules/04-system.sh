@@ -111,8 +111,8 @@ module_04() {
     info "Installing Oh My ZSH for root user and regular user"
 
     # Run install scripts for regular user and root
-    run_chroot sh -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    run_chroot su - $USERNAME -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    run_chroot su -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+    run_chroot su - $USERNAME -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
 
     run_chroot chsh root -s /usr/bin/zsh
     run_chroot chsh $USERNAME -s /usr/bin/zsh
