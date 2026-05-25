@@ -1,0 +1,9 @@
+# ─────────────────────────────
+# AMD Graphics Drivers
+# ─────────────────────────────
+# These graphics drivers will be installed on systems where an AMD graphics card is detected
+
+mesa
+lib32-mesa
+xf86-video-amdgpu
+vulcan-radeon

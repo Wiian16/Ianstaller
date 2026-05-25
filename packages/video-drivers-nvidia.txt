@@ -1,0 +1,8 @@
+# ─────────────────────────────
+# NVIDIA Graphics Drivers
+# ─────────────────────────────
+# These graphics drivers will be installed on systems where an NVIDIA graphics card is detected
+
+nvidia
+nvidia-utils
+nvidia-settings

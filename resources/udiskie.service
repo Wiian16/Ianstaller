@@ -1,0 +1,9 @@
+[Unit]
+Description=Automount USB drives with udiskie
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/udiskie -a
+
+[Install]
+WantedBy=default.target

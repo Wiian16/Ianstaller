@@ -1,0 +1,9 @@
+# ─────────────────────────────
+# Intel Graphics Drivers
+# ─────────────────────────────
+# These graphics drivers will be installed on systems where an Intel graphics card is detected
+
+mesa
+lib32-mesa
+xf86-video-intel
+vulcan-intel

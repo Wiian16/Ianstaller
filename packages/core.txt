@@ -36,6 +36,7 @@ sed                 # Stream editor for text manipulation
 unzip               # Extract ZIP archives
 
 # Shell tools & text editors
+zsh                 # Z shell
 vi                  # Basic text editor (vi clone)
 vim                 # More fully-featured text editor
 neovim              # Modern Vim-compatible editor

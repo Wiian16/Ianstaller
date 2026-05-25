@@ -22,6 +22,44 @@ makepkg -si --noconfirm
     run_chroot userdel -r aurbuild
 }
 
+install_nvidia_drivers() {
+    error "Nvidia drivers not implemented yet"
+    return 1
+}
+
+install_amd_drivers() {
+    error "AMD drivers not implemented yet"
+    return 1
+}
+
+install_intel_drivers() {
+    error "Intel Drivers not implemented yet"
+    return 1
+}
+
+install_video_drivers() {
+    info "Detecting installed graphics cards"
+    local intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "true" || echo "false")
+    local amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "true" || echo "false")
+    local nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "true" || echo "false")
+
+    if [ $nvidia_detected = "true" ]; then
+        install_nvidia_drivers
+    fi
+
+    if [ $amd_detected = "true" ]; then
+        install_amd_drivers
+    fi
+
+    if [ $intel_detected = "true" ]; then
+        install_intel_drivers
+    fi
+
+    if [[ $nvidia_detected = "false" && $amd_detected = "false" && $intel_detected = "false" ]]; then
+        info "No supported graphics cards detected, continuing"
+    fi
+}
+
 module_04() {
     install_yay
 
@@ -49,6 +87,16 @@ module_04() {
     info "Enabling services"
     run_chroot systemctl enable NetworkManager.service
     run_chroot systemctl enable systemd-timesyncd.service # Time synchronization
+    run_chroot systemctl enable bluetooth.service
+
+    # Udiskie custom service
+    ensure_dir /mnt/home/$USERNAME/.config/systemd/user
+
+    run cp ./resources/udiskie.service /mnt/home/$USERNAME/.config/systemd/user/udiskie.service
+
+    # Manually enable user systemd service
+    ensure_dir /mnt/home/$USERNAME/.config/systemd/user/default.target.wants
+    run ln -sf /mnt/home/$USERNAME/.config/systemd/user/udiskie.service /mnt/home/$USERNAME/.config/systemd/user/default.target.wants/udiskie.service
 
     # Configure UFW
     info "Configuring and enabling UFW"
@@ -59,4 +107,15 @@ module_04() {
     run_chroot ufw default deny incoming
     run_chroot ufw default allow outgoing
     run_chroot systemctl enable ufw.service
+
+    info "Installing Oh My ZSH for root user and regular user"
+
+    # Run install scripts for regular user and root
+    run_chroot sh -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    run_chroot su - $USERNAME -c "RUNZSH=no CHSH=no $(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+    run_chroot chsh root -s /usr/bin/zsh
+    run_chroot chsh $USERNAME -s /usr/bin/zsh
+
+    install_video_drivers
 }
