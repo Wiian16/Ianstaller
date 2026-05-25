@@ -96,6 +96,16 @@ install_cpu_microcode() {
     run_chroot grub-mkconfig -o /boot/grub/grub.cfg
 }
 
+setup_timers() {
+    info "Setting up systemd timers"
+
+    info "Enabling reflector timer"
+    ensure_dir /mnt/etc/systemd/system/timers.target.wants
+    ensure_dir /etc/xdg/reflector
+    run cp ./resources/reflector.conf /mnt/etc/xdg/reflector
+    run ln -sf /mnt/usr/lib/systemd/system/reflector.timer /mnt/etc/systemd/system/timers.target.wants/reflector.timer
+}
+
 module_04() {
     install_yay
 
@@ -156,4 +166,6 @@ module_04() {
     install_video_drivers
 
     install_cpu_microcode
+
+    setup_timers
 }
