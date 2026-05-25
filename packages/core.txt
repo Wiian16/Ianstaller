@@ -34,6 +34,7 @@ bc                  # Command-line calculator
 jq                  # JSON processor for scripts
 sed                 # Stream editor for text manipulation
 unzip               # Extract ZIP archives
+pacman-contrib      # Contributed scripts for pacman (cache, search, etc.)
 
 # Shell tools & text editors
 zsh                 # Z shell
