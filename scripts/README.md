@@ -59,7 +59,7 @@ Sets up the environment on the live ISO for development, paths and username are 
 It is currenly hosted at `assets.ianmcg.dev/Public/bootstrap.sh` and can be downloaded with the following command: 
 
 ```bash
-curl -fsSLo bootstrap.sh assets.ianmcg.dev/Public/bootstrap_ianstaller.sh
+curl -fsSLo bootstrap.sh assets.ianmcg.dev/Public/bootstrap.sh
 ```
 
 > Note: It `Public` is case sensitive in this URL
