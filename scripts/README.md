@@ -51,3 +51,15 @@ Creates an http server for the local pacman repo. See `build_official_repo.sh` f
 
 Modifies `/etc/pacman.conf` to use the local network pacman cache before mirrors. See `build_official_repo.sh` for 
 usage info.
+
+## `bootstrap.sh`
+
+Sets up the environment on the live ISO for development, paths and username are currently hard coded. 
+
+It is currenly hosted at `assets.ianmcg.dev/Public/bootstrap.sh` and can be downloaded with the following command: 
+
+```bash
+curl -fsSLo bootstrap.sh assets.ianmcg.dev/Public/bootstrap_ianstaller.sh
+```
+
+> Note: It `Public` is case sensitive in this URL
