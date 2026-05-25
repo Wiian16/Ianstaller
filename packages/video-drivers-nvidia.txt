@@ -3,6 +3,6 @@
 # ─────────────────────────────
 # These graphics drivers will be installed on systems where an NVIDIA graphics card is detected
 
-nvidia
+nvidia-open
 nvidia-utils
 nvidia-settings

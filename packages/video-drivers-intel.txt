@@ -6,4 +6,5 @@
 mesa
 lib32-mesa
 xf86-video-intel
-vulcan-intel
+vulkan-intel
+intel-media-driver
