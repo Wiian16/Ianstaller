@@ -23,25 +23,36 @@ makepkg -si --noconfirm
 }
 
 install_nvidia_drivers() {
-    error "Nvidia drivers not implemented yet"
-    return 1
+    info "Installing NVIDIA graphics drivers"
+    run pacstrap -K /mnt ${VIDEO_DRIVERS_NVIDIA[@]}
+    return 0
 }
 
 install_amd_drivers() {
-    error "AMD drivers not implemented yet"
-    return 1
+    info "Installing AMD graphics drivers"
+    run pacstrap -K /mnt ${VIDEO_DRIVERS_AMD[@]}
+    return 0
 }
 
 install_intel_drivers() {
-    error "Intel Drivers not implemented yet"
-    return 1
+    info "Installing Intel graphics drivers"
+    run pacstrap -K /mnt ${VIDEO_DRIVERS_INTEL[@]}
+    return 0
 }
 
 install_video_drivers() {
     info "Detecting installed graphics cards"
-    local intel_detected=$(lspci | grep -E "VGA|3D" | grep -qi intel && echo "true" || echo "false")
-    local amd_detected=$(lspci | grep -E "VGA|3D" | grep -qi amd && echo "true" || echo "false")
-    local nvidia_detected=$(lspci | grep -E "VGA|3D" | grep -qi nvidia && echo "true" || echo "false")
+    
+    # Run lspci once
+    local pci_output
+    pci_output=$(lspci | grep -E "VGA|3D")
+
+    # declaring local variables always returns exit code 0, seperate declaration from assignment
+    local intel_detected amd_detected nvidia_detected
+    echo "$pci_output" | grep -qi intel   && intel_detected=true   || intel_detected=false
+    echo "$pci_output" | grep -qi amd     && amd_detected=true     || amd_detected=false
+    echo "$pci_output" | grep -qi nvidia  && nvidia_detected=true  || nvidia_detected=false
+
 
     if [ $nvidia_detected = "true" ]; then
         install_nvidia_drivers
@@ -58,6 +69,31 @@ install_video_drivers() {
     if [[ $nvidia_detected = "false" && $amd_detected = "false" && $intel_detected = "false" ]]; then
         info "No supported graphics cards detected, continuing"
     fi
+}
+
+install_cpu_microcode() {
+        info "Detecting CPU vendor for microcode"
+    
+    local cpu_vendor
+    cpu_vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | awk '{print $3}')
+    
+    case "$cpu_vendor" in
+        GenuineIntel)
+            info "Installing Intel microcode"
+            run pacstrap -K /mnt intel-ucode
+            ;;
+        AuthenticAMD)
+            info "Installing AMD microcode"
+            run pacstrap -K /mnt amd-ucode
+            ;;
+        *)
+            info "Unknown CPU vendor '$cpu_vendor', skipping microcode"
+            return 0
+            ;;
+    esac
+
+    info Re-generating grub config to pick up microcode
+    run_chroot grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 module_04() {
@@ -118,4 +154,6 @@ module_04() {
     run_chroot chsh $USERNAME -s /usr/bin/zsh
 
     install_video_drivers
+
+    install_cpu_microcode
 }
