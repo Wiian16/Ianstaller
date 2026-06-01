@@ -62,4 +62,4 @@ It is currenly hosted at `assets.ianmcg.dev/Public/bootstrap.sh` and can be down
 curl -fsSLo bootstrap.sh assets.ianmcg.dev/Public/bootstrap.sh
 ```
 
-> Note: It `Public` is case sensitive in this URL
+> Note: `Public` is case sensitive in this URL
